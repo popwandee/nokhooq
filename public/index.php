@@ -27,5 +27,5 @@ $app = new \Slim\App($setting);
 
 (new Route())->register($app);
 (new Dependency())->register($app);
-
+echo "OK";
 $app->run();

@@ -113,7 +113,7 @@ foreach ($events as $event) {
 		  // $replyText=$replyMessage.$displayName.$statusMessage;
 		  break;
             }//end switch
-
+      $replyText='Nothing';
 	    $bot->replyMessage($reply_token, $replyText);
     }//end if text
 }// end foreach event

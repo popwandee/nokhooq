@@ -72,9 +72,9 @@ try {
 
 // แปลงข้อความรูปแบบ JSON  ให้อยู่ในโครงสร้างตัวแปร array
 $content = json_decode($events, true);
-$replyToken = $content['content'][0]['replyToken'];
-    $userID = $content['content'][0]['source']['userId'];
-    $sourceType = $content['content'][0]['source']['type'];
+$replyToken = $content['events'][0]['replyToken'];
+    $userID = $content['events'][0]['source']['userId'];
+    $sourceType = $content['events'][0]['source']['type'];
     $is_postback = NULL;
     $is_message = NULL;
 

@@ -103,8 +103,50 @@ foreach ($events as $event) {
 
     switch ($explodeText[0]) {
       case '#':
-           $suspectedPeople = new FlexSuspectedPeople;
-           $suspectedPeople->get();
+      $json = '{
+ "type":"bubble",
+ "direction":"ltr",
+ "header":{
+   "type":"box",
+   "layout":"vertical",
+   "contents":[
+     {"type":"text", "text":"header"}
+   ]
+ },
+ "hero":{
+   "type":"image",
+   "url":"https://example.com/hero.png"
+ },
+ "body":{
+   "type":"box",
+   "layout":"vertical",
+   "contents":[
+     {"type":"text", "text":"body"}
+   ]
+ },
+ "footer":{
+   "type":"box",
+   "layout":"vertical",
+   "contents":[
+     {"type":"text", "text":"footer"}
+   ]
+ },
+ "styles":{
+   "body":{
+     "separator": true,
+     "separatorColor": "#000000"
+   }
+ }
+}';
+      $builder = new BubbleContainerBuilder(
+      ContainerDirection::LTR,
+      new BoxComponentBuilder(ComponentLayout::VERTICAL, [new TextComponentBuilder('header')]),
+      new ImageComponentBuilder('https://example.com/hero.png'),
+      new BoxComponentBuilder(ComponentLayout::VERTICAL, [new TextComponentBuilder('body')]),
+      new BoxComponentBuilder(ComponentLayout::VERTICAL, [new TextComponentBuilder('footer')]),
+      BubbleStylesBuilder::builder()->setBody(new BlockStyleBuilder(null, true, '#000000'))
+  );
+  $this->assertEquals(json_decode($json, true), $builder->build());
 
       break;
 

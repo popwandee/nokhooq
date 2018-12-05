@@ -53,30 +53,25 @@ $bot = new \LINE\LINEBot(
 
 );
 
-
-$signature = $_SERVER["HTTP_".\LINE\LINEBot\Constant\HTTPHeader::LINE_SIGNATURE];
-
-
-try {
-	$events = $bot->parseEventRequest(file_get_contents('php://input'), $signature);
-} catch(\LINE\LINEBot\Exception\InvalidSignatureException $e) {
-	error_log('parseEventRequest failed. InvalidSignatureException => '.var_export($e, true));
-} catch(\LINE\LINEBot\Exception\UnknownEventTypeException $e) {
-	error_log('parseEventRequest failed. UnknownEventTypeException => '.var_export($e, true));
-} catch(\LINE\LINEBot\Exception\UnknownMessageTypeException $e) {
-	error_log('parseEventRequest failed. UnknownMessageTypeException => '.var_export($e, true));
-} catch(\LINE\LINEBot\Exception\InvalidEventRequestException $e) {
-	error_log('parseEventRequest failed. InvalidEventRequestException => '.var_export($e, true));
-}
-
+// คำสั่งรอรับการส่งค่ามาของ LINE Messaging API
+$content = file_get_contents('php://input');
 
 // แปลงข้อความรูปแบบ JSON  ให้อยู่ในโครงสร้างตัวแปร array
-$content = json_decode($events, true);
-$replyToken = $content['events'][0]['replyToken'];
-    $userID = $content['events'][0]['source']['userId'];
-    $sourceType = $content['events'][0]['source']['type'];
-    $is_postback = NULL;
-    $is_message = NULL;
+$events = json_decode($content, true);
+if(!is_null($events)){
+    // ถ้ามีค่า สร้างตัวแปรเก็บ replyToken ไว้ใช้งาน
+    $replyToken = $events['events'][0]['replyToken'];
+}
+// ส่วนของคำสั่งจัดเตียมรูปแบบข้อความสำหรับส่ง
+$textMessageBuilder = new TextMessageBuilder(json_encode($events));
 
-echo $userID;
-$bot->replyText($reply_token, $userID);
+//l ส่วนของคำสั่งตอบกลับข้อความ
+$response = $bot->replyMessage($replyToken,$textMessageBuilder);
+if ($response->isSucceeded()) {
+    echo 'Succeeded!';
+    return;
+}
+
+// Failed
+echo $response->getHTTPStatus() . ' ' . $response->getRawBody();
+?>

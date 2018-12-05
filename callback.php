@@ -85,10 +85,15 @@ if(!is_null($events)){
   }
 }
 // ส่วนของคำสั่งจัดเตียมรูปแบบข้อความสำหรับส่ง
+<<<<<<< HEAD
 //$textMessageBuilder = new TextMessageBuilder(json_encode($events));
 // ส่วนของคำสั่งจัดเตียมรูปแบบข้อความสำหรับส่ง
 $textMessageBuilder = new TextMessageBuilder($textReplyMessage);
 
+=======
+$textMessageBuilder = new TextMessageBuilder(json_encode($events));
+$userId=$textMessageBuilder->evnents->source->userId;
+>>>>>>> 897399bae57562ab720b5d5be6e14f5a6b515a78
 //l ส่วนของคำสั่งตอบกลับข้อความ
 $response = $bot->replyMessage($replyToken,$userId);
 if ($response->isSucceeded()) {

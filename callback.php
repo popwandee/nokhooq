@@ -79,3 +79,4 @@ $replyToken = $content['events'][0]['replyToken'];
     $is_message = NULL;
 
 echo $userID;
+$bot->replyText($reply_token, $userID);

@@ -15,6 +15,33 @@ use LINE\LINEBot\MessageBuilder\ImagemapMessageBuilder;
 use LINE\LINEBot\MessageBuilder\MultiMessageBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateMessageBuilder;
+use LINE\LINEBot\Constant\Flex\ComponentLayout;
+use LINE\LINEBot\Constant\Flex\ContainerDirection;
+use LINE\LINEBot\MessageBuilder\Flex\ContainerBuilder\BubbleContainerBuilder;
+use LINE\LINEBot\MessageBuilder\Flex\ComponentBuilder\BoxComponentBuilder;
+use LINE\LINEBot\MessageBuilder\Flex\ComponentBuilder\ImageComponentBuilder;
+use LINE\LINEBot\MessageBuilder\Flex\ComponentBuilder\TextComponentBuilder;
+use LINE\LINEBot\MessageBuilder\Flex\BlockStyleBuilder;
+use LINE\LINEBot\MessageBuilder\Flex\BubbleStylesBuilder;
+use PHPUnit\Framework\TestCase;
+use LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder;
+use LINE\LINEBot\Constant\Flex\ComponentButtonStyle;
+use LINE\LINEBot\Constant\Flex\ComponentFontSize;
+use LINE\LINEBot\Constant\Flex\ComponentFontWeight;
+use LINE\LINEBot\Constant\Flex\ComponentGravity;
+use LINE\LINEBot\Constant\Flex\ComponentImageAspectMode;
+use LINE\LINEBot\Constant\Flex\ComponentImageAspectRatio;
+use LINE\LINEBot\Constant\Flex\ComponentImageSize;
+use LINE\LINEBot\Constant\Flex\ComponentLayout;
+use LINE\LINEBot\Constant\Flex\ComponentMargin;
+use LINE\LINEBot\Constant\Flex\ComponentSpacing;
+use LINE\LINEBot\MessageBuilder\FlexMessageBuilder;
+use LINE\LINEBot\MessageBuilder\Flex\ComponentBuilder\BoxComponentBuilder;
+use LINE\LINEBot\MessageBuilder\Flex\ComponentBuilder\ButtonComponentBuilder;
+use LINE\LINEBot\MessageBuilder\Flex\ComponentBuilder\ImageComponentBuilder;
+use LINE\LINEBot\MessageBuilder\Flex\ComponentBuilder\TextComponentBuilder;
+use LINE\LINEBot\MessageBuilder\Flex\ContainerBuilder\BubbleContainerBuilder;
+use LINE\LINEBot\MessageBuilder\Flex\ContainerBuilder\CarouselContainerBuilder;
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
@@ -76,28 +103,137 @@ foreach ($events as $event) {
 
     switch ($explodeText[0]) {
       case '#':
-       $replyText='{ "type": "bubble",
-          "body": { "type": "box", "layout": "horizontal",
-                "contents": [
-                 {
-                   "type": "image",
-                   "url": "https://www.linefriends.com/content/banner/201804/3b5364c97c2d4a26988f85acdc78514e.jpg",
-                   "size": "full",
-                   "aspectRatio": "16:9",
-                   "aspectMode": "cover"
-                 }
-                 ]
-            }
-         }';// end $replyText
+           $suspectedPeople = new FlexSuspectedPeople;
+           $suspectedPeople->get();
 
       break;
 
 		  default:
-		  // $replyText=$replyText.$displayName.$statusMessage;
+       //$handler = new ImageMessageHandler($bot, $logger, $req, $event);
+		  // $replyText=$replyMessage.$displayName.$statusMessage;
 		  break;
             }//end switch
 
-	    $bot->replyText($reply_token, $replyText);
+	    $bot->replyMessage($reply_token, $replyText);
     }//end if text
 }// end foreach event
-?>
+
+
+class FlexSuspectedPeople
+{
+    private static $items = [
+        '111' => [
+            'photo' => 'https://example.com/photo1.png',
+            'name' => 'Arm Chair, White',
+            'price' => 49.99,
+            'stock' => true,
+        ],
+        '112' => [
+            'photo' => 'https://example.com/photo2.png',
+            'name' => 'Metal Desk Lamp',
+            'price' => 11.99,
+            'stock' => false,
+        ],
+    ];
+    /**
+     * Create sample shopping flex message
+     *
+     * @return \LINE\LINEBot\MessageBuilder\FlexMessageBuilder
+     */
+    public static function get()
+    {
+        return FlexMessageBuilder::builder()
+            ->setAltText('Suspected People')
+            ->setContents(new CarouselContainerBuilder([
+                self::createItemBubble(111),
+                self::createItemBubble(112),
+                self::createMoreBubble()
+            ]));
+    }
+    private static function createItemBubble($itemId)
+    {
+        $item = self::$items[$itemId];
+        return BubbleContainerBuilder::builder()
+            ->setHero(self::createItemHeroBlock($item))
+            ->setBody(self::createItemBodyBlock($item))
+            ->setFooter(self::createItemFooterBlock($item));
+    }
+    private static function createItemHeroBlock($item)
+    {
+        return ImageComponentBuilder::builder()
+            ->setUrl($item['photo'])
+            ->setSize(ComponentImageSize::FULL)
+            ->setAspectRatio(ComponentImageAspectRatio::R20TO13)
+            ->setAspectMode(ComponentImageAspectMode::COVER);
+    }
+    private static function createItemBodyBlock($item)
+    {
+        $components = [];
+        $components[] = TextComponentBuilder::builder()
+            ->setText($item['name'])
+            ->setWrap(true)
+            ->setWeight(ComponentFontWeight::BOLD)
+            ->setSize(ComponentFontSize::XL);
+        $price = explode('.', number_format($item['price'], 2));
+        $components[] = BoxComponentBuilder::builder()
+            ->setLayout(ComponentLayout::BASELINE)
+            ->setContents([
+                TextComponentBuilder::builder()
+                    ->setText('$'.$price[0])
+                    ->setWrap(true)
+                    ->setWeight(ComponentFontWeight::BOLD)
+                    ->setSize(ComponentFontSize::XL)
+                    ->setFlex(0),
+                TextComponentBuilder::builder()
+                    ->setText('.'.$price[1])
+                    ->setWrap(true)
+                    ->setWeight(ComponentFontWeight::BOLD)
+                    ->setSize(ComponentFontSize::SM)
+                    ->setFlex(0)
+            ]);
+
+        return BoxComponentBuilder::builder()
+            ->setLayout(ComponentLayout::VERTICAL)
+            ->setSpacing(ComponentSpacing::SM)
+            ->setContents($components);
+    }
+    private static function createItemFooterBlock($item)
+    {
+        $color = $item['stock'] ? null : '#aaaaaa';
+        $cartButton = ButtonComponentBuilder::builder()
+            ->setStyle(ComponentButtonStyle::PRIMARY)
+            ->setColor($color)
+            ->setAction(
+                new UriTemplateActionBuilder(
+                    'Add to Cart',
+                    'https://example.com'
+                )
+            );
+        $wishButton = ButtonComponentBuilder::builder()
+            ->setAction(
+                new UriTemplateActionBuilder(
+                    'Add to wishlist',
+                    'https://example.com'
+                )
+            );
+        return BoxComponentBuilder::builder()
+            ->setLayout(ComponentLayout::VERTICAL)
+            ->setSpacing(ComponentSpacing::SM)
+            ->setContents([$cartButton, $wishButton]);
+    }
+    private static function createMoreBubble()
+    {
+        return BubbleContainerBuilder::builder()
+            ->setBody(
+                BoxComponentBuilder::builder()
+                    ->setLayout(ComponentLayout::VERTICAL)
+                    ->setSpacing(ComponentSpacing::SM)
+                    ->setContents([
+                        ButtonComponentBuilder::builder()
+                            ->setFlex(1)
+                            ->setGravity(ComponentGravity::CENTER)
+                            ->setAction(new UriTemplateActionBuilder('See more', 'https://example.com'))
+                    ])
+            );
+    }
+}//end class

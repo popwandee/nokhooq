@@ -142,13 +142,8 @@ foreach ($events as $event) {
                           default:
                               $textReplyMessage = " คุณไม่ได้พิมพ์ ค่า ตามที่กำหนด";
                               $replyData = new TextMessageBuilder($textReplyMessage);
-                              break;                                      
-                      }
-                      break;
-                  default:
-                      $textReplyMessage = json_encode($events);
-                      $replyData = new TextMessageBuilder($textReplyMessage);
-                      break;
+                              break;
+                      
         }// end switch
     }//end if text
 }// end foreach event

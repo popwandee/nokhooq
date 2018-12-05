@@ -64,10 +64,9 @@ if(!is_null($events)){
 }
 // ส่วนของคำสั่งจัดเตียมรูปแบบข้อความสำหรับส่ง
 $textMessageBuilder = new TextMessageBuilder(json_encode($events));
-
+$userId=$textMessageBuilder->evnents->source->userId;
 //l ส่วนของคำสั่งตอบกลับข้อความ
-$response = $bot->replyMessage($replyToken,$textMessageBuilder);
-$response = $bot->replyMessage($replyToken,$textMessageBuilder);
+$response = $bot->replyMessage($replyToken,$userId);
 if ($response->isSucceeded()) {
     echo 'Succeeded!';
     return;

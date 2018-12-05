@@ -4,22 +4,12 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInited38a44dc3cef748f0bd1433f988d5ce
+class ComposerStaticInitbce9dd805079fd4665125aee3988ea30
 {
-    public static $files = array (
-        '253c157292f75eb38082b5acb06f3f01' => __DIR__ . '/..' . '/nikic/fast-route/src/functions.php',
-    );
-
     public static $prefixLengthsPsr4 = array (
-        'S' => 
-        array (
-            'Slim\\' => 5,
-        ),
         'P' => 
         array (
             'Psr\\Log\\' => 8,
-            'Psr\\Http\\Message\\' => 17,
-            'Psr\\Container\\' => 14,
         ),
         'M' => 
         array (
@@ -29,32 +19,12 @@ class ComposerStaticInited38a44dc3cef748f0bd1433f988d5ce
         array (
             'LINE\\' => 5,
         ),
-        'I' => 
-        array (
-            'Interop\\Container\\' => 18,
-        ),
-        'F' => 
-        array (
-            'FastRoute\\' => 10,
-        ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Slim\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/slim/slim/Slim',
-        ),
         'Psr\\Log\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
-        ),
-        'Psr\\Http\\Message\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-        ),
-        'Psr\\Container\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/psr/container/src',
         ),
         'Monolog\\' => 
         array (
@@ -62,35 +32,15 @@ class ComposerStaticInited38a44dc3cef748f0bd1433f988d5ce
         ),
         'LINE\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/src',
-            1 => __DIR__ . '/..' . '/linecorp/line-bot-sdk/src',
-        ),
-        'Interop\\Container\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/container-interop/container-interop/src/Interop/Container',
-        ),
-        'FastRoute\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/nikic/fast-route/src',
-        ),
-    );
-
-    public static $prefixesPsr0 = array (
-        'P' => 
-        array (
-            'Pimple' => 
-            array (
-                0 => __DIR__ . '/..' . '/pimple/pimple/src',
-            ),
+            0 => __DIR__ . '/..' . '/linecorp/line-bot-sdk/src',
         ),
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInited38a44dc3cef748f0bd1433f988d5ce::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInited38a44dc3cef748f0bd1433f988d5ce::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInited38a44dc3cef748f0bd1433f988d5ce::$prefixesPsr0;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitbce9dd805079fd4665125aee3988ea30::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitbce9dd805079fd4665125aee3988ea30::$prefixDirsPsr4;
 
         }, null, ClassLoader::class);
     }

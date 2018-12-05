@@ -35,6 +35,7 @@ class EventRequestParser
         'leave' => 'LINE\LINEBot\Event\LeaveEvent',
         'postback' => 'LINE\LINEBot\Event\PostbackEvent',
         'beacon' => 'LINE\LINEBot\Event\BeaconDetectionEvent',
+        'accountLink' => 'LINE\LINEBot\Event\AccountLinkEvent',
     ];
 
     private static $messageType2class = [
@@ -42,6 +43,7 @@ class EventRequestParser
         'image' => 'LINE\LINEBot\Event\MessageEvent\ImageMessage',
         'video' => 'LINE\LINEBot\Event\MessageEvent\VideoMessage',
         'audio' => 'LINE\LINEBot\Event\MessageEvent\AudioMessage',
+        'file' => 'LINE\LINEBot\Event\MessageEvent\FileMessage',
         'location' => 'LINE\LINEBot\Event\MessageEvent\LocationMessage',
         'sticker' => 'LINE\LINEBot\Event\MessageEvent\StickerMessage',
     ];

@@ -67,6 +67,7 @@ $textMessageBuilder = new TextMessageBuilder(json_encode($events));
 
 //l ส่วนของคำสั่งตอบกลับข้อความ
 $response = $bot->replyMessage($replyToken,$textMessageBuilder);
+$response = $bot->replyMessage($replyToken,$textMessageBuilder);
 if ($response->isSucceeded()) {
     echo 'Succeeded!';
     return;

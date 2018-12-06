@@ -34,6 +34,7 @@ use LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselColumnTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ConfirmTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselColumnTemplateBuilder;
+use LINE\LINEBot\MessageBuilder\Flex\ContainerBuilder;
 $logger = new Logger('LineBot');
 $logger->pushHandler(new StreamHandler('php://stderr', Logger::DEBUG));
 define("MLAB_API_KEY", '6QxfLc4uRn3vWrlgzsWtzTXBW7CYVsQv');
@@ -77,58 +78,24 @@ switch ($explodeText[0]) {
 		 case '#i':
 		$userId=$event->getUserId();
 		$replyText="OK".$userId;
-   $actionBuilder = array(
-           new MessageTemplateActionBuilder(
-               'Message Template',// ข้อความแสดงในปุ่ม
-               'This is Text' // ข้อความที่จะแสดงฝั่งผู้ใช้ เมื่อคลิกเลือก
-                ),
-           new UriTemplateActionBuilder(
-               'Uri Template', // ข้อความแสดงในปุ่ม
-               'https://www.ninenik.com'
-                ),
-           new DatetimePickerTemplateActionBuilder(
-               'Datetime Picker', // ข้อความแสดงในปุ่ม
-               http_build_query(array(
-               'action'=>'reservation',
-                'person'=>5
-                )), // ข้อมูลที่จะส่งไปใน webhook ผ่าน postback event
-                'datetime', // date | time | datetime รูปแบบข้อมูลที่จะส่ง ในที่นี้ใช้ datatime
-                 substr_replace(date("Y-m-d H:i"),'T',10,1), // วันที่ เวลา ค่าเริ่มต้นที่ถูกเลือก
-                 substr_replace(date("Y-m-d H:i",strtotime("+5 day")),'T',10,1), //วันที่ เวลา มากสุดที่เลือกได้
-                 substr_replace(date("Y-m-d H:i"),'T',10,1) //วันที่ เวลา น้อยสุดที่เลือกได้
-                 ),      
-            new PostbackTemplateActionBuilder(
-                 'Postback', // ข้อความแสดงในปุ่ม
-                 http_build_query(array(
-                 'action'=>'buy',
-                 'item'=>100
-                 )) // ข้อมูลที่จะส่งไปใน webhook ผ่าน postback event
-                  // 'Postback Text'  // ข้อความที่จะแสดงฝั่งผู้ใช้ เมื่อคลิกเลือก
-                 ),      
-                 );
-       $imageUrl = 'https://www.mywebsite.com/imgsrc/photos/w/simpleflower';
-      $replyData = new TemplateMessageBuilder('Button Template',
-                   new ButtonTemplateBuilder(
-                   'button template builder', // กำหนดหัวเรื่อง
-                   'Please select', // กำหนดรายละเอียด
-                   $imageUrl, // กำหนด url รุปภาพ
-                   $actionBuilder  // กำหนด action object
-			 )
-                        );       
+   $picFullSize = 'https://www.mywebsite.com/imgsrc/photos/f/simpleflower';
+                        $picThumbnail = 'https://www.mywebsite.com/imgsrc/photos/f/simpleflower/240';
+                        $replyData = new ImageMessageBuilder($picFullSize,$picThumbnail);
 			   
 		break;
           default:
 		// $replyText=$replyText.$displayName.$statusMessage;
 		break;
             }//end switch
-	    
-	   $response = $bot->replyMessage($replyToken,$replyData);
+	   
+    }//end if text
+}// end foreach event
+$response = $bot->replyMessage($replyToken,$replyData);
 if ($response->isSucceeded()) {
     echo 'Succeeded!';
     return;
 }
+ 
 // Failed
 echo $response->getHTTPStatus() . ' ' . $response->getRawBody();
-    }//end if text
-}// end foreach event
 ?>

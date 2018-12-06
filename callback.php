@@ -75,7 +75,8 @@ foreach ($events as $event) {
 switch ($explodeText[0]) {
 		
 		 case '#i':
-		$replyText="OK";
+		$userId=$event->getUserId();
+		$replyText="OK".$userId;
 		break;
 		/* จบส่วนตรวจสอบบุคคล */
 		

@@ -39,7 +39,9 @@ use LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselColumnTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ConfirmTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselColumnTemplateBuilder;
-use LINE\LINEBot\MessageBuilder\Flex\ContainerBuilder;
+use LINE\LINEBot\MessageBuilder\Flex;
+use LINE\LINEBot\MessageBuilder\Flex\ContainerBuilder
+use LINE\LINEBot\MessageBuilder\Flex\ComponentBuilder
 $logger = new Logger('LineBot');
 $logger->pushHandler(new StreamHandler('php://stderr', Logger::DEBUG));
 define("MLAB_API_KEY", '6QxfLc4uRn3vWrlgzsWtzTXBW7CYVsQv');
@@ -113,8 +115,9 @@ foreach ($events as $event) {
                            $textMessage = new TextMessageBuilder($textReplyMessage);
 			   $multiMessage->add($textMessage);
 			    
-			   $picFullSize = 'https://www.matichon.co.th/wp-content/uploads/2017/05/matichon-logo.png';
-                           $picThumbnail = 'https://www.matichon.co.th/wp-content/uploads/2017/05/matichon-logo.png';
+			   //$picFullSize = 'https://www.matichon.co.th/wp-content/uploads/2017/05/matichon-logo.png';
+			   $picFullSize = 'https://bn1files.storage.live.com/y4pMlhZsxFJIFi-D3SNj1YQVzW4HJX7oAC9R6pSrNYaOsJvXQt36angRz0x3aEfkGEj_O3eieMoIM11FJQFFKoRXODkPwsNoC_Z1YmGIauGgUebE7Sn246WuWjezz513-CzdeLih1XrZqxGF9-BvvUXMp0iLwoQZ0PeUqAroaab1rBQTiWyW1lQMC6zBd3XNJqG/FB_IMG_1532045906089.jpg?psid=1&width=607&height=910';
+                           $picThumbnail = 'https://bn1files.storage.live.com/y4pMlhZsxFJIFi-D3SNj1YQVzW4HJX7oAC9R6pSrNYaOsJvXQt36angRz0x3aEfkGEj_O3eieMoIM11FJQFFKoRXODkPwsNoC_Z1YmGIauGgUebE7Sn246WuWjezz513-CzdeLih1XrZqxGF9-BvvUXMp0iLwoQZ0PeUqAroaab1rBQTiWyW1lQMC6zBd3XNJqG/FB_IMG_1532045906089.jpg?psid=1&width=607&height=910';
                            $imageMessage = new ImageMessageBuilder($picFullSize,$picThumbnail);
 			   $multiMessage->add($imageMessage);
                            }//end for each

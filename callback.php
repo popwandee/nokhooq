@@ -42,15 +42,19 @@ use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselColumnTemplateBuild
 use LINE\LINEBot\MessageBuilder\Flex;
 use LINE\LINEBot\MessageBuilder\Flex\ContainerBuilder;
 use LINE\LINEBot\MessageBuilder\Flex\ComponentBuilder;
+
 $logger = new Logger('LineBot');
 $logger->pushHandler(new StreamHandler('php://stderr', Logger::DEBUG));
+
 define("MLAB_API_KEY", '6QxfLc4uRn3vWrlgzsWtzTXBW7CYVsQv');
 define("LINE_MESSAGING_API_CHANNEL_SECRET", '6f6b7e3b1aff242cd4fb0fa3113f7af3');
 define("LINE_MESSAGING_API_CHANNEL_TOKEN", 'RvsMabRN/IlT2BtmEoH+KcIbha8F/aPLWWzMKj8lxz/7f9c/Ygu5qvrUGtdlrTwyQwR5tFcgIGGzCkHO/SzIKrdCqUm+sal4t73YOuTPZsQX4bR35g3ZJGTvFilxvO1LVO/I6B1ouhx3UjGWe+OwswdB04t89/1O/w1cDnyilFU=');
+
 $bot = new \LINE\LINEBot(
     new \LINE\LINEBot\HTTPClient\CurlHTTPClient(LINE_MESSAGING_API_CHANNEL_TOKEN),
     ['channelSecret' => LINE_MESSAGING_API_CHANNEL_SECRET]
 );
+
 $signature = $_SERVER["HTTP_".\LINE\LINEBot\Constant\HTTPHeader::LINE_SIGNATURE];
 try {
 	$events = $bot->parseEventRequest(file_get_contents('php://input'), $signature);
@@ -77,7 +81,7 @@ foreach ($events as $event) {
 	}
     if ($event instanceof \LINE\LINEBot\Event\MessageEvent\TextMessage) {
         $replyToken = $event->getReplyToken();
-	    $replyData='No Data';
+	$replyData='No Data';
         $text = $event->getText();
         $text = strtolower($text);
         $explodeText=explode(" ",$text);
@@ -110,7 +114,8 @@ foreach ($events as $event) {
 		    $textReplyMessage="";
 		    $count=1;
 	            $multiMessage =     new MultiMessageBuilder;
-		    $textMessage = 'ตอบคุณ @'.$userDisplayName; 
+		    $textReplyMessage = 'ตอบคุณ @'.$userDisplayName; 
+                    $textMessage = new TextMessageBuilder($textReplyMessage);
 		    $multiMessage->add($textMessage);
                     foreach($data as $rec){
                            $textReplyMessage= "\nหมายเลข ปชช. ".$rec->nationid."\nชื่อ".$rec->name."\nที่อยู่".$rec->address."\nหมายเหตุ".$rec->note;

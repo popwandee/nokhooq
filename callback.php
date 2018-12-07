@@ -83,7 +83,7 @@ foreach ($events as $event) {
 		
 	case '#i':
 		$userId=$event->getUserId();
-		$response = $bot->getProfile($userID);
+		$response = $event->getProfile($userId);
                 if ($response->isSucceeded()) {// ดึงค่าโดยแปลจาก JSON String .ให้อยู่ใรูปแบบโครงสร้าง ตัวแปร array 
                    $userData = $response->getJSONDecodedBody(); // return array     
                             // $userData['userId'] // $userData['displayName'] // $userData['pictureUrl']                            // $userData['statusMessage']

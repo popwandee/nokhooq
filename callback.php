@@ -116,8 +116,8 @@ foreach ($events as $event) {
 			   $multiMessage->add($textMessage);
 			    
 			   //$picFullSize = 'https://www.matichon.co.th/wp-content/uploads/2017/05/matichon-logo.png';
-			   $picFullSize = 'https://bn1files.storage.live.com/y4pMlhZsxFJIFi-D3SNj1YQVzW4HJX7oAC9R6pSrNYaOsJvXQt36angRz0x3aEfkGEj_O3eieMoIM11FJQFFKoRXODkPwsNoC_Z1YmGIauGgUebE7Sn246WuWjezz513-CzdeLih1XrZqxGF9-BvvUXMp0iLwoQZ0PeUqAroaab1rBQTiWyW1lQMC6zBd3XNJqG/FB_IMG_1532045906089.jpg?psid=1&width=607&height=910';
-                           $picThumbnail = 'https://bn1files.storage.live.com/y4pMlhZsxFJIFi-D3SNj1YQVzW4HJX7oAC9R6pSrNYaOsJvXQt36angRz0x3aEfkGEj_O3eieMoIM11FJQFFKoRXODkPwsNoC_Z1YmGIauGgUebE7Sn246WuWjezz513-CzdeLih1XrZqxGF9-BvvUXMp0iLwoQZ0PeUqAroaab1rBQTiWyW1lQMC6zBd3XNJqG/FB_IMG_1532045906089.jpg?psid=1&width=607&height=910';
+			   $picFullSize = 'https://images.pexels.com/photos/1657109/pexels-photo-1657109.jpeg';
+                           $picThumbnail = 'https://images.pexels.com/photos/1657109/pexels-photo-1657109.jpeg';
                            $imageMessage = new ImageMessageBuilder($picFullSize,$picThumbnail);
 			   $multiMessage->add($imageMessage);
                            }//end for each

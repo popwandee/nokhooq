@@ -113,8 +113,8 @@ foreach ($events as $event) {
                            $textMessage = new TextMessageBuilder($textReplyMessage);
 			   $multiMessage->add($textMessage);
 			    
-			   $picFullSize = 'https://bn1302files.storage.live.com/y4pJ7v_jyL3oWTiC_Ojsc252dl7p3HL2RuLFVde55d1SBbtfp-II0ev4AZdZgIfVFcRlqF1e9XdJcBNeeqt1ysoaxdXA-EGModNvoIzsugdUJhHHDrmwgnq9qW5h3vmNma13jcp4c-mrbZn7p0H-BjfON1zgmcryAmLTdg0FlVQpfkapJu7EQ-vw6hnD14CWTZ1/FB_IMG_1532045886775.jpg';
-                           $picThumbnail = 'https://bn1302files.storage.live.com/y4pJ7v_jyL3oWTiC_Ojsc252dl7p3HL2RuLFVde55d1SBbtfp-II0ev4AZdZgIfVFcRlqF1e9XdJcBNeeqt1ysoaxdXA-EGModNvoIzsugdUJhHHDrmwgnq9qW5h3vmNma13jcp4c-mrbZn7p0H-BjfON1zgmcryAmLTdg0FlVQpfkapJu7EQ-vw6hnD14CWTZ1/FB_IMG_1532045886775.jpg';
+			   $picFullSize = 'https://www.matichon.co.th/wp-content/uploads/2017/05/matichon-logo.png';
+                           $picThumbnail = 'https://www.matichon.co.th/wp-content/uploads/2017/05/matichon-logo.png';
                            $imageMessage = new ImageMessageBuilder($picFullSize,$picThumbnail);
 			   $multiMessage->add($imageMessage);
                            }//end for each

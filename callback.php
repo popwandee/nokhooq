@@ -92,10 +92,9 @@ foreach ($events as $event) {
                             // $userData['userId'] // $userData['displayName'] // $userData['pictureUrl']                            // $userData['statusMessage']
                    $userDisplayName = $userData['displayName']; 
 		   //$bot->replyText($replyToken, $userDisplayName); ใช้ตรวจสอบว่าผู้ถาม ชื่อ อะไร	
-			$userRequest= $userDisplayName;
 		}else{
 		 //$bot->replyText($replyToken, $userId);  ใช้ตรวจสอบว่าผู้ถาม ID อะไร	
-			$userRequest=$userId;
+			$userDisplayName = $userId;
 		}
 		// จบส่วนการตรวจสอบผู้ใช้
 		      
@@ -106,11 +105,13 @@ foreach ($events as $event) {
                    $isData=sizeof($data);
 		      
                  if($isData >0){
-		    $replyText="";
+		    $textReplyMessage="";
 		    $count=1;
 	            $multiMessage =     new MultiMessageBuilder;
+		    $textMessage = 'ตอบคุณ @'.$userDisplayName; 
+		    $multiMessage->add($textMessage);
                     foreach($data as $rec){
-                           $textReplyMessage= 'หมายเลข ปชช. '.$rec->nationid."\nชื่อ".$rec->name."\nที่อยู่".$rec->address."\nหมายเหตุ".$rec->note;
+                           $textReplyMessage= "\nหมายเลข ปชช. ".$rec->nationid."\nชื่อ".$rec->name."\nที่อยู่".$rec->address."\nหมายเหตุ".$rec->note;
                            $count++;
                            $textMessage = new TextMessageBuilder($textReplyMessage);
 			   $multiMessage->add($textMessage);
@@ -124,31 +125,34 @@ foreach ($events as $event) {
 	            $replyData = $multiMessage;
 			 
 		   }else{ //$isData <0  ไม่พบข้อมูลที่ค้นหา
-		      $replyText= "ตอบคุณ ".$userRequest."ไม่พบ ".$explodeText[1]."  ในฐานข้อมูลของหน่วย"; 
+		      $textMessage= "ตอบคุณ ".$userDisplayName."ไม่พบ ".$explodeText[1]."  ในฐานข้อมูลของหน่วย"; 
+		      $bot->replyText($replyToken, $textMessage);
 		        } // end $isData>0
-		   }else{
-	              $replyText= "ตอบคุณ ".$userRequest."คุณให้ข้อมูลในการสอบถามไม่ครบถ้วนค่ะ"; 
+		   }else{ // no $explodeText[1]
+	              $textMessage= "ตอบคุณ ".$userDisplayName."คุณให้ข้อมูลในการสอบถามไม่ครบถ้วนค่ะ"; 
+		      $bot->replyText($replyToken, $textMessage);
 		   }// end !is_null($explodeText[1])
 		/* จบส่วนดึงข้อมูลจากฐานข้อมูล */
-		$bot->replyText($replyToken, $replyText);
+		      
+		
 		break; // break case #i
           default:
-		// $replyText=$replyText.$displayName.$statusMessage;
+		
 		break;
             }//end switch
-	   
+	   // ส่วนส่งกลับข้อมูลให้ LINE
+           $response = $bot->replyMessage($replyToken,$replyData);
+           if ($response->isSucceeded()) {
+              echo 'Succeeded!';
+              return;
+              }
+ 
+              // Failed ส่งข้อความไม่สำเร็จ
+             $statusMessage = $response->getHTTPStatus() . ' ' . $response->getRawBody();
+             echo $statusMessage;
+             $bot->replyText($replyToken, $statusMessage);
          }//end if event is textMessage
 }// end foreach event
 	
-// ส่วนส่งกลับข้อมูลให้ LINE
-$response = $bot->replyMessage($replyToken,$replyData);
-if ($response->isSucceeded()) {
-    echo 'Succeeded!';
-    return;
-}
- 
-// Failed ส่งข้อความไม่สำเร็จ
-$statusMessage = $response->getHTTPStatus() . ' ' . $response->getRawBody();
-echo $statusMessage;
-$bot->replyText($replyToken, $statusMessage);
+
 ?>

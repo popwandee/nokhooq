@@ -86,7 +86,8 @@ switch ($explodeText[0]) {
                 if ($response->isSucceeded()) {// ดึงค่าโดยแปลจาก JSON String .ให้อยู่ใรูปแบบโครงสร้าง ตัวแปร array 
                    $userData = $response->getJSONDecodedBody(); // return array     
                             // $userData['userId'] // $userData['displayName'] // $userData['pictureUrl']                            // $userData['statusMessage']
-                   $userDisplayName = $userData['displayName'];             
+                   $userDisplayName = $userData['displayName']; 
+			$bot->replyText($replyToken, $userDisplayName);
 		}
 		$json = file_get_contents('https://api.mlab.com/api/1/databases/hooqline/collections/people?apiKey='.MLAB_API_KEY.'&q={"nationid":"'.$explodeText[1].'"}');
                 $data = json_decode($json);
@@ -103,6 +104,7 @@ switch ($explodeText[0]) {
 		
                 $textReplyMessage = $replyText.'\n Bot ตอบกลับข้อความให้ ผู้ขอ LINE ID '.$userId.' UserName '.$userDisplayName;
                 $textMessage = new TextMessageBuilder($textReplyMessage);
+		      $bot->replyText($replyToken, $textReplyMessage);
                                          
                 $picFullSize = 'https://1drv.ms/u/s!Avyyxk2pwArvtA_mgtPWUQ1bWADy';
                 $picThumbnail = 'https://1drv.ms/u/s!Avyyxk2pwArvtA_mgtPWUQ1bWADy';

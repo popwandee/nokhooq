@@ -73,7 +73,7 @@ foreach ($events as $event) {
 		continue;
 	}
     if ($event instanceof \LINE\LINEBot\Event\MessageEvent\TextMessage) {
-        $reply_token = $event->getReplyToken();
+        $replyToken = $event->getReplyToken();
         $text = $event->getText();
         $text = strtolower($text);
         $explodeText=explode(" ",$text);
@@ -104,5 +104,5 @@ if ($response->isSucceeded()) {
 // Failed
 $statusMessage = $response->getHTTPStatus() . ' ' . $response->getRawBody();
 echo $statusMessage;
-$bot->replyText($reply_token, $statusMessage);
+$bot->replyText($replyToken, $statusMessage);
 ?>

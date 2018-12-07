@@ -106,10 +106,15 @@ foreach ($events as $event) {
                  if($isData >0){
 		    $replyText="";
 		    $count=1;
+	            $multiMessage =     new MultiMessageBuilder;
                     foreach($data as $rec){
-                           $replyText= $replyText.'หมายเลข ปชช. '.$rec->nationid."\nชื่อ".$rec->name."\nที่อยู่".$rec->address."\nหมายเหตุ".$rec->note;
+                           $textReplyMessage= 'หมายเลข ปชช. '.$rec->nationid."\nชื่อ".$rec->name."\nที่อยู่".$rec->address."\nหมายเหตุ".$rec->note;
                            $count++;
+                           $textMessage = new TextMessageBuilder($textReplyMessage);
+			   $multiMessage->add($textMessage);
                            }//end for each
+	            $replyData = $multiMessage;
+			 
 		   }else{ //$isData <0  ไม่พบข้อมูลที่ค้นหา
 		      $replyText= "ตอบคุณ ".$userRequest."ไม่พบ ".$explodeText[1]."  ในฐานข้อมูลของหน่วย"; 
 		        } // end $isData>0

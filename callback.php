@@ -112,6 +112,11 @@ foreach ($events as $event) {
                            $count++;
                            $textMessage = new TextMessageBuilder($textReplyMessage);
 			   $multiMessage->add($textMessage);
+			    
+			   $picFullSize = 'https://1drv.ms/u/s!Avyyxk2pwArvtA_mgtPWUQ1bWADy';
+                           $picThumbnail = 'https://1drv.ms/u/s!Avyyxk2pwArvtA_mgtPWUQ1bWADy';
+                           $imageMessage = new ImageMessageBuilder($picFullSize,$picThumbnail);
+			   $multiMessage->add($imageMessage);
                            }//end for each
 	            $replyData = $multiMessage;
 			 

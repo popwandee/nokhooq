@@ -77,14 +77,12 @@ foreach ($events as $event) {
 	}
     if ($event instanceof \LINE\LINEBot\Event\MessageEvent\TextMessage) {
         $replyToken = $event->getReplyToken();
+	    $replyData='No Data';
         $text = $event->getText();
         $text = strtolower($text);
         $explodeText=explode(" ",$text);
 	    
-      switch ($explodeText[0]) {
-		
-	case '#i':
-		// ส่วนตรวจสอบผู้ใช้
+	    // ส่วนตรวจสอบผู้ใช้
 		$userId=$event->getUserId();
 		$response = $bot->getProfile($userId);
                 if ($response->isSucceeded()) {// ดึงค่าโดยแปลจาก JSON String .ให้อยู่ใรูปแบบโครงสร้าง ตัวแปร array 
@@ -98,6 +96,10 @@ foreach ($events as $event) {
 		}
 		// จบส่วนการตรวจสอบผู้ใช้
 		      
+      switch ($explodeText[0]) {
+		
+	case '#i':
+		
 		/* ส่วนดึงข้อมูลจากฐานข้อมูล */
 		if (!is_null($explodeText[1])){
 		   $json = file_get_contents('https://api.mlab.com/api/1/databases/hooqline/collections/people?apiKey='.MLAB_API_KEY.'&q={"nationid":"'.$explodeText[1].'"}');
@@ -116,9 +118,8 @@ foreach ($events as $event) {
                            $textMessage = new TextMessageBuilder($textReplyMessage);
 			   $multiMessage->add($textMessage);
 			    
-			   //$picFullSize = 'https://www.matichon.co.th/wp-content/uploads/2017/05/matichon-logo.png';
-			   $picFullSize = 'https://images.pexels.com/photos/1657109/pexels-photo-1657109.jpeg';
-                           $picThumbnail = 'https://images.pexels.com/photos/1657109/pexels-photo-1657109.jpeg';
+			   $picFullSize = 'https://www.matichon.co.th/wp-content/uploads/2017/05/matichon-logo.png';
+                           $picThumbnail = 'https://www.matichon.co.th/wp-content/uploads/2017/05/matichon-logo.png';
                            $imageMessage = new ImageMessageBuilder($picFullSize,$picThumbnail);
 			   $multiMessage->add($imageMessage);
                            }//end for each
@@ -137,9 +138,11 @@ foreach ($events as $event) {
 		
 		break; // break case #i
           default:
-		
+		 $textMessage= "ตอบคุณ ".$userDisplayName."คุณไม่ได้ถามค่ะตามที่กำหนดค่ะ"; 
+		 $bot->replyText($replyToken, $textMessage);
 		break;
             }//end switch
+	    
 	   // ส่วนส่งกลับข้อมูลให้ LINE
            $response = $bot->replyMessage($replyToken,$replyData);
            if ($response->isSucceeded()) {

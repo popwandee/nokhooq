@@ -82,17 +82,42 @@ foreach ($events as $event) {
       switch ($explodeText[0]) {
 		
 	case '#i':
+		// ส่วนตรวจสอบผู้ใช้
 		$userId=$event->getUserId();
 		$response = $bot->getProfile($userId);
                 if ($response->isSucceeded()) {// ดึงค่าโดยแปลจาก JSON String .ให้อยู่ใรูปแบบโครงสร้าง ตัวแปร array 
                    $userData = $response->getJSONDecodedBody(); // return array     
                             // $userData['userId'] // $userData['displayName'] // $userData['pictureUrl']                            // $userData['statusMessage']
                    $userDisplayName = $userData['displayName']; 
-		   $bot->replyText($replyToken, $userDisplayName);
+		   //$bot->replyText($replyToken, $userDisplayName); ใช้ตรวจสอบว่าผู้ถาม ชื่อ อะไร	
+			$userRequest= $userDisplayName;
 		}else{
-		 $bot->replyText($replyToken, $userId);	
+		 //$bot->replyText($replyToken, $userId);  ใช้ตรวจสอบว่าผู้ถาม ID อะไร	
+			$userRequest=$userId;
 		}
-		
+		// จบส่วนการตรวจสอบผู้ใช้
+		      
+		/* ส่วนดึงข้อมูลจากฐานข้อมูล */
+		if (!is_null($explodeText[1])){
+		   $json = file_get_contents('https://api.mlab.com/api/1/databases/hooqline/collections/people?apiKey='.MLAB_API_KEY.'&q={"nationid":"'.$explodeText[1].'"}');
+                   $data = json_decode($json);
+                   $isData=sizeof($data);
+		      
+                 if($isData >0){
+		    $replyText="";
+		    $count=1;
+                    foreach($data as $rec){
+                           $replyText= $replyText.'หมายเลข ปชช. '.$rec->nationid."\nชื่อ".$rec->name."\nที่อยู่".$rec->address."\nหมายเหตุ".$rec->note;
+                           $count++;
+                           }//end for each
+		   }else{ //$isData <0  ไม่พบข้อมูลที่ค้นหา
+		      $replyText= "ตอบคุณ ".$userRequest."ไม่พบ ".$explodeText[1]."  ในฐานข้อมูลของหน่วย"; 
+		        } // end $isData>0
+		   }else{
+	              $replyText= "ตอบคุณ ".$userRequest."คุณให้ข้อมูลในการสอบถามไม่ครบถ้วนค่ะ"; 
+		   }// end !is_null($explodeText[1])
+		/* จบส่วนดึงข้อมูลจากฐานข้อมูล */
+		$bot->replyText($replyToken, $replyText);
 		break; // break case #i
           default:
 		// $replyText=$replyText.$displayName.$statusMessage;

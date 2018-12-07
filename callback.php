@@ -83,8 +83,8 @@ switch ($explodeText[0]) {
 		 case '#i':
 		$userId=$event->getUserId();
 		$replyText="OK".$userId;
-   $picFullSize = 'https://www.mywebsite.com/imgsrc/photos/f/simpleflower';
-                        $picThumbnail = 'https://www.mywebsite.com/imgsrc/photos/f/simpleflower/240';
+   $picFullSize = 'https://c1.staticflickr.com/5/4580/37750773884_db05d1677f.jpg';
+                        $picThumbnail = 'https://c1.staticflickr.com/5/4580/37750773884_db05d1677f.jpg';
                         $replyData = new ImageMessageBuilder($picFullSize,$picThumbnail);
 			   $response = $bot->replyMessage($replyToken,$replyData);
 		break;

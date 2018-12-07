@@ -86,8 +86,8 @@ switch ($explodeText[0]) {
                 if ($response->isSucceeded()) {// ดึงค่าโดยแปลจาก JSON String .ให้อยู่ใรูปแบบโครงสร้าง ตัวแปร array 
                    $userData = $response->getJSONDecodedBody(); // return array     
                             // $userData['userId'] // $userData['displayName'] // $userData['pictureUrl']                            // $userData['statusMessage']
-                   $userDisplayName = 'สวัสดีครับ คุณ '.$userData['displayName'];             
-                               
+                   $userDisplayName = $userData['displayName'];             
+		}
 		$json = file_get_contents('https://api.mlab.com/api/1/databases/hooqline/collections/people?apiKey='.MLAB_API_KEY.'&q={"nationid":"'.$explodeText[1].'"}');
                 $data = json_decode($json);
                 $isData=sizeof($data);

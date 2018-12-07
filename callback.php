@@ -123,8 +123,8 @@ foreach ($events as $event) {
                            $textMessage = new TextMessageBuilder($textReplyMessage);
 			   $multiMessage->add($textMessage);
 			    
-			   $picFullSize = 'https://www.matichon.co.th/wp-content/uploads/2017/05/matichon-logo.png';
-                           $picThumbnail = 'https://www.matichon.co.th/wp-content/uploads/2017/05/matichon-logo.png';
+			   $picFullSize = 'https://scontent.fbkk10-1.fna.fbcdn.net/v/t1.0-9/47493554_1957180654409187_5821761163943215104_n.jpg?_nc_cat=105&_nc_ht=scontent.fbkk10-1.fna&oh=66c832e859dca01cc060dbe3cc510fd0&oe=5C6D0873';
+                           $picThumbnail = 'https://scontent.fbkk10-1.fna.fbcdn.net/v/t1.0-9/47493554_1957180654409187_5821761163943215104_n.jpg?_nc_cat=105&_nc_ht=scontent.fbkk10-1.fna&oh=66c832e859dca01cc060dbe3cc510fd0&oe=5C6D0873';
                            $imageMessage = new ImageMessageBuilder($picFullSize,$picThumbnail);
 			   $multiMessage->add($imageMessage);
                            }//end for each

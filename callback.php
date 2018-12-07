@@ -86,7 +86,7 @@ switch ($explodeText[0]) {
    $picFullSize = 'https://www.mywebsite.com/imgsrc/photos/f/simpleflower';
                         $picThumbnail = 'https://www.mywebsite.com/imgsrc/photos/f/simpleflower/240';
                         $replyData = new ImageMessageBuilder($picFullSize,$picThumbnail);
-			   
+			   $response = $bot->replyMessage($replyToken,$replyData);
 		break;
           default:
 		// $replyText=$replyText.$displayName.$statusMessage;

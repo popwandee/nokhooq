@@ -61,14 +61,15 @@ try {
 } catch(\LINE\LINEBot\Exception\InvalidEventRequestException $e) {
 	error_log('parseEventRequest failed. InvalidEventRequestException => '.var_export($e, true));
 }
+
 foreach ($events as $event) {
   // Postback Event
-	if (($event instanceof \LINE\LINEBot\Event\PostbackEvent)) {
+    if (($event instanceof \LINE\LINEBot\Event\PostbackEvent)) {
 		$logger->info('Postback message has come');
 		continue;
 	}
 	// Location Event
-	if  ($event instanceof LINE\LINEBot\Event\MessageEvent\LocationMessage) {
+    if  ($event instanceof LINE\LINEBot\Event\MessageEvent\LocationMessage) {
 		$logger->info("location -> ".$event->getLatitude().",".$event->getLongitude());
 		continue;
 	}
@@ -78,7 +79,7 @@ foreach ($events as $event) {
         $text = strtolower($text);
         $explodeText=explode(" ",$text);
 	    
-switch ($explodeText[0]) {
+      switch ($explodeText[0]) {
 		
 	case '#i':
 		$userId=$event->getUserId();
@@ -87,51 +88,18 @@ switch ($explodeText[0]) {
                    $userData = $response->getJSONDecodedBody(); // return array     
                             // $userData['userId'] // $userData['displayName'] // $userData['pictureUrl']                            // $userData['statusMessage']
                    $userDisplayName = $userData['displayName']; 
-			$bot->replyText($replyToken, $userDisplayName);
+		   $bot->replyText($replyToken, $userDisplayName);
+		}else{
+		 $bot->replyText($replyToken, $userId);	
 		}
-		$json = file_get_contents('https://api.mlab.com/api/1/databases/hooqline/collections/people?apiKey='.MLAB_API_KEY.'&q={"nationid":"'.$explodeText[1].'"}');
-                $data = json_decode($json);
-                $isData=sizeof($data);
-              if($isData >0){
-		 $replyText="";
-		 $count=1;
-                 foreach($data as $rec){
-                  $replyText= $replyText.'หมายเลข ปชช. '.$rec->nationid."\nชื่อ".$rec->name."\nที่อยู่".$rec->address."\nหมายเหตุ".$rec->note;
-                  $count++;
-                 }//end for each
-		      
-	    // https://bn1302files.storage.live.com/y4pJ7v_jyL3oWTiC_Ojsc252dl7p3HL2RuLFVde55d1SBbtfp-II0ev4AZdZgIfVFcRlqF1e9XdJcBNeeqt1ysoaxdXA-EGModNvoIzsugdUJhHHDrmwgnq9qW5h3vmNma13jcp4c-mrbZn7p0H-BjfON1zgmcryAmLTdg0FlVQpfkapJu7EQ-vw6hnD14CWTZ1/FB_IMG_1532045886775.jpg
 		
-                $textReplyMessage = $replyText.'\n Bot ตอบกลับข้อความให้ ผู้ขอ LINE ID '.$userId.' UserName '.$userDisplayName;
-                $textMessage = new TextMessageBuilder($textReplyMessage);
-		      $bot->replyText($replyToken, $textReplyMessage);
-                                         
-                $picFullSize = 'https://1drv.ms/u/s!Avyyxk2pwArvtA_mgtPWUQ1bWADy';
-                $picThumbnail = 'https://1drv.ms/u/s!Avyyxk2pwArvtA_mgtPWUQ1bWADy';
-                $imageMessage = new ImageMessageBuilder($picFullSize,$picThumbnail);
-                                         
-                $placeName = "ที่ตั้งร้าน";
-                $placeAddress = "แขวง พลับพลา เขต วังทองหลาง กรุงเทพมหานคร ประเทศไทย";
-                $latitude = 13.780401863217657;
-                $longitude = 100.61141967773438;
-                $locationMessage = new LocationMessageBuilder($placeName, $placeAddress, $latitude ,$longitude);        
-     
-                $multiMessage =     new MultiMessageBuilder;
-                $multiMessage->add($textMessage);
-                $multiMessage->add($imageMessage);
-                $multiMessage->add($locationMessage);
-                $replyData = $multiMessage;     
-		}else{ // $isData <0  ไม่พบข้อมูลที่ค้นหา
-		  $replyText= "ไม่พบ ".$explodeText[1]."  ในฐานข้อมูลของหน่วย";
-		  $img_url = "https://plus.google.com/photos/photo/108961502262758121403/6146705217388476082";
-	          }
-		break;
+		break; // break case #i
           default:
 		// $replyText=$replyText.$displayName.$statusMessage;
 		break;
             }//end switch
 	   
-    }//end if text
+         }//end if event is textMessage
 }// end foreach event
 	
 // ส่วนส่งกลับข้อมูลให้ LINE

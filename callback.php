@@ -102,5 +102,7 @@ if ($response->isSucceeded()) {
 }
  
 // Failed
-echo $response->getHTTPStatus() . ' ' . $response->getRawBody();
+$statusMessage = $response->getHTTPStatus() . ' ' . $response->getRawBody();
+echo $statusMessage;
+$bot->replyText($reply_token, $statusMessage);
 ?>

@@ -83,10 +83,24 @@ switch ($explodeText[0]) {
 		 case '#i':
 		$userId=$event->getUserId();
 		$replyText="OK".$userId;
-   $picFullSize = 'https://c1.staticflickr.com/5/4580/37750773884_db05d1677f.jpg';
-                        $picThumbnail = 'https://c1.staticflickr.com/5/4580/37750773884_db05d1677f.jpg';
-                        $replyData = new ImageMessageBuilder($picFullSize,$picThumbnail);
-			   $response = $bot->replyMessage($replyToken,$replyData);
+                $textReplyMessage = "Bot ตอบกลับคุณเป็นข้อความ";
+                $textMessage = new TextMessageBuilder($textReplyMessage);
+                                         
+                $picFullSize = 'https://www.mywebsite.com/imgsrc/photos/f/simpleflower';
+                $picThumbnail = 'https://www.mywebsite.com/imgsrc/photos/f/simpleflower/240';
+                $imageMessage = new ImageMessageBuilder($picFullSize,$picThumbnail);
+                                         
+                $placeName = "ที่ตั้งร้าน";
+                $placeAddress = "แขวง พลับพลา เขต วังทองหลาง กรุงเทพมหานคร ประเทศไทย";
+                $latitude = 13.780401863217657;
+                $longitude = 100.61141967773438;
+                $locationMessage = new LocationMessageBuilder($placeName, $placeAddress, $latitude ,$longitude);        
+     
+                $multiMessage =     new MultiMessageBuilder;
+                $multiMessage->add($textMessage);
+                $multiMessage->add($imageMessage);
+                $multiMessage->add($locationMessage);
+                $replyData = $multiMessage;          
 		break;
           default:
 		// $replyText=$replyText.$displayName.$statusMessage;

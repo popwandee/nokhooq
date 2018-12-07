@@ -80,14 +80,32 @@ foreach ($events as $event) {
 	    
 switch ($explodeText[0]) {
 		
-		 case '#i':
+	case '#i':
 		$userId=$event->getUserId();
-		$replyText="OK".$userId;
-                $textReplyMessage = "Bot ตอบกลับคุณเป็นข้อความ";
+		$response = $bot->getProfile($userID);
+                if ($response->isSucceeded()) {// ดึงค่าโดยแปลจาก JSON String .ให้อยู่ใรูปแบบโครงสร้าง ตัวแปร array 
+                   $userData = $response->getJSONDecodedBody(); // return array     
+                            // $userData['userId'] // $userData['displayName'] // $userData['pictureUrl']                            // $userData['statusMessage']
+                   $userDisplayName = 'สวัสดีครับ คุณ '.$userData['displayName'];             
+                               
+		$json = file_get_contents('https://api.mlab.com/api/1/databases/hooqline/collections/people?apiKey='.MLAB_API_KEY.'&q={"nationid":"'.$explodeText[1].'"}');
+                $data = json_decode($json);
+                $isData=sizeof($data);
+              if($isData >0){
+		 $replyText="";
+		 $count=1;
+                 foreach($data as $rec){
+                  $replyText= $replyText.'หมายเลข ปชช. '.$rec->nationid."\nชื่อ".$rec->name."\nที่อยู่".$rec->address."\nหมายเหตุ".$rec->note;
+                  $count++;
+                 }//end for each
+		      
+	    // https://bn1302files.storage.live.com/y4pJ7v_jyL3oWTiC_Ojsc252dl7p3HL2RuLFVde55d1SBbtfp-II0ev4AZdZgIfVFcRlqF1e9XdJcBNeeqt1ysoaxdXA-EGModNvoIzsugdUJhHHDrmwgnq9qW5h3vmNma13jcp4c-mrbZn7p0H-BjfON1zgmcryAmLTdg0FlVQpfkapJu7EQ-vw6hnD14CWTZ1/FB_IMG_1532045886775.jpg
+		
+                $textReplyMessage = $replyText.'\n Bot ตอบกลับข้อความให้ ผู้ขอ LINE ID '.$userId.' UserName '.$userDisplayName;
                 $textMessage = new TextMessageBuilder($textReplyMessage);
                                          
-                $picFullSize = 'https://www.mywebsite.com/imgsrc/photos/f/simpleflower';
-                $picThumbnail = 'https://www.mywebsite.com/imgsrc/photos/f/simpleflower/240';
+                $picFullSize = 'https://1drv.ms/u/s!Avyyxk2pwArvtA_mgtPWUQ1bWADy';
+                $picThumbnail = 'https://1drv.ms/u/s!Avyyxk2pwArvtA_mgtPWUQ1bWADy';
                 $imageMessage = new ImageMessageBuilder($picFullSize,$picThumbnail);
                                          
                 $placeName = "ที่ตั้งร้าน";
@@ -100,7 +118,11 @@ switch ($explodeText[0]) {
                 $multiMessage->add($textMessage);
                 $multiMessage->add($imageMessage);
                 $multiMessage->add($locationMessage);
-                $replyData = $multiMessage;          
+                $replyData = $multiMessage;     
+		}else{ // $isData <0  ไม่พบข้อมูลที่ค้นหา
+		  $replyText= "ไม่พบ ".$explodeText[1]."  ในฐานข้อมูลของหน่วย";
+		  $img_url = "https://plus.google.com/photos/photo/108961502262758121403/6146705217388476082";
+	          }
 		break;
           default:
 		// $replyText=$replyText.$displayName.$statusMessage;
@@ -109,13 +131,15 @@ switch ($explodeText[0]) {
 	   
     }//end if text
 }// end foreach event
+	
+// ส่วนส่งกลับข้อมูลให้ LINE
 $response = $bot->replyMessage($replyToken,$replyData);
 if ($response->isSucceeded()) {
     echo 'Succeeded!';
     return;
 }
  
-// Failed
+// Failed ส่งข้อความไม่สำเร็จ
 $statusMessage = $response->getHTTPStatus() . ' ' . $response->getRawBody();
 echo $statusMessage;
 $bot->replyText($replyToken, $statusMessage);

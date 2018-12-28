@@ -143,8 +143,8 @@ foreach ($events as $event) {
 		
 		break; // break case #i
           default:
-		 $textMessage= "ตอบคุณ ".$userDisplayName."คุณไม่ได้ถามค่ะตามที่กำหนดค่ะ"; 
-		 $bot->replyText($replyToken, $textMessage);
+		 //$textMessage= "ตอบคุณ ".$userDisplayName."คุณไม่ได้ถามค่ะตามที่กำหนดค่ะ"; 
+		 //$bot->replyText($replyToken, $textMessage);
 		break;
             }//end switch
 	    

@@ -85,27 +85,30 @@ try {
 } catch(\LINE\LINEBot\Exception\InvalidEventRequestException $e) {
 	error_log('parseEventRequest failed. InvalidEventRequestException => '.var_export($e, true));
 }
-
+$content = file_get_contents('php://input');
+$arrayJson = json_decode($content, true);
+ if(isset($arrayJson['events'][0]['source']['userId']){
+      $userId = $arrayJson['events'][0]['source']['userId'];
+   }
+   else if(isset($arrayJson['events'][0]['source']['groupId'])){
+      $userId = $arrayJson['events'][0]['source']['groupId'];
+   }
+   else if(isset($arrayJson['events'][0]['source']['room'])){
+      $userId = $arrayJson['events'][0]['source']['room'];
+   }
 
 foreach ($events as $event) {
 	$replyToken = $event->getReplyToken();
 	$replyData='No Data';
+	$multiMessage = new MultiMessageBuilder;
 	// ส่วนตรวจสอบผู้ใช้
-	$groupId='';$roomId='';$userId=''; $userDisplayName='';// default value
-	$userId=$event->getUserId();
-	  if((!is_null($userId)){
-		$response = $bot->getProfile($userId);
-                if ($response->isSucceeded()) {// ดึงค่าโดยแปลจาก JSON String .ให้อยู่ใรูปแบบโครงสร้าง ตัวแปร array
-                   $userData = $response->getJSONDecodedBody(); // return array
-                            // $userData['userId'] // $userData['displayName'] // $userData['pictureUrl']                            // $userData['statusMessage']
-                   $userDisplayName = $userData['displayName'];
-		   $textReplyMessage = 'ตอบคุณ '.$userDisplayName.' User id : '.$userId;
+		   $textReplyMessage = 'ตอบคุณ User id : '.$userId;
                    $textMessage = new TextMessageBuilder($textReplyMessage);
 		   $multiMessage->add($textMessage);
 	           $replyData = $multiMessage;
 	           $response = $bot->replyMessage($replyToken,$replyData);
 		
-		} // end if $response->isSucceeded();
+		
 	    }//end is_null($userId);
 	    
 		// จบส่วนการตรวจสอบผู้ใช้
@@ -130,7 +133,6 @@ foreach ($events as $event) {
         $text = strtolower($text);
         $explodeText=explode(" ",$text);
 	$textReplyMessage="initial output";
-        $multiMessage = new MultiMessageBuilder;
 	$textMessage = new TextMessageBuilder($textReplyMessage);
 	$multiMessage->add($textMessage);
 	$replyData = $multiMessage;

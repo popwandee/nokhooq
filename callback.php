@@ -108,8 +108,8 @@ foreach ($events as $event) {
         $text = $event->getText();
         $text = strtolower($text);
         $explodeText=explode(" ",$text);
-	$textReplyMessage="";
-        $multiMessage =     new MultiMessageBuilder;
+	$textReplyMessage="initial output";
+        $multiMessage = new MultiMessageBuilder;
 	$textMessage = new TextMessageBuilder($textReplyMessage);
 	$multiMessage->add($textMessage);
 	$replyData = $multiMessage;

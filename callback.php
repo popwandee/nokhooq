@@ -133,21 +133,15 @@ foreach ($events as $event) {
 		   $multiMessage->add($textMessage);
 	           $replyData = $multiMessage;
 	           $response = $bot->replyMessage($replyToken,$replyData);
-		continue;
-		}else{
-		 //$bot->replyText($replyToken, $userId);  ใช้ตรวจสอบว่าผู้ถาม ID อะไร
-			$userDisplayName = $userId;
-		}// end get profile
+		
+		}
 	    }//end is_null($userId);
 	    
 		// จบส่วนการตรวจสอบผู้ใช้
 	
       switch ($explodeText[0]) {
 	case '#i':
-		 //$picFullSize = $userData['pictureUrl';
-                          // $picThumbnail = $userData['pictureUrl';
-			  // $imageMessage = new ImageMessageBuilder($picFullSize,$picThumbnail);
-			  // $multiMessage->add($imageMessage);
+		 
 		/* ส่วนดึงข้อมูลจากฐานข้อมูล */
 		if (!is_null($explodeText[1])){
 		   $json = file_get_contents('https://api.mlab.com/api/1/databases/hooqline/collections/people?apiKey='.MLAB_API_KEY.'&q={"nationid":"'.$explodeText[1].'"}');
@@ -165,14 +159,9 @@ foreach ($events as $event) {
 			   $multiMessage->add($textMessage);
 			   $picFullSize = "https://www.hooq.info/img/$rec->nationid.png";
                            $picThumbnail = "https://www.hooq.info/img/$rec->nationid.png";
-			   //$picFullSize = 'https://s.isanook.com/sp/0/rp/r/w700/ya0xa0m1w0/aHR0cHM6Ly9zLmlzYW5vb2suY29tL3NwLzAvdWQvMTY2LzgzNDUzOS9sb3ZlcmppbmEuanBn.jpg';
-                           //$picThumbnail = 'https://s.isanook.com/sp/0/rp/r/w700/ya0xa0m1w0/aHR0cHM6Ly9zLmlzYW5vb2suY29tL3NwLzAvdWQvMTY2LzgzNDUzOS9sb3ZlcmppbmEuanBn.jpg';
-                           $imageMessage = new ImageMessageBuilder($picFullSize,$picThumbnail);
+			   $imageMessage = new ImageMessageBuilder($picFullSize,$picThumbnail);
 			   $multiMessage->add($imageMessage);
-			    //$arrayPostData['to']=$replyId;
-			    //$arrayPostData['messages'][0]['type']="text";
-			    //$arrayPostData['messages'][0]['text']="hello";
-			    //pushMsg($arrayHeader,$arrayPostData);
+			    
                            }//end for each
 	            $replyData = $multiMessage;
 		   }else{ //$isData <0  ไม่พบข้อมูลที่ค้นหา
@@ -289,8 +278,6 @@ foreach ($events as $event) {
 	    }else{ $text="Cannot teach Lisa";
 		  $text2 = '';
 		 }
-            
-          
 		     $flexData = new ReplyTranslateMessage;
 		     $image=rand(1,409);
 	             $picFullSize = "https://www.hooq.info/photos/$image.jpg";
@@ -345,9 +332,7 @@ case '#tran':
                      $replyData = $flexData->get($question,$answer,$picFullSize);
                                break;
 
-          default:
-             
-		break;
+          default: break;
             }//end switch
 	   // ส่วนส่งกลับข้อมูลให้ LINE
            $response = $bot->replyMessage($replyToken,$replyData);
@@ -411,46 +396,6 @@ class ReplyTranslateMessage
             //->setMargin(ComponentMargin::SM)
             ->setSpacing(ComponentSpacing::SM)
             ->setContents([$title,$textDetail]);
-	
-	    /*    
-        $place = BoxComponentBuilder::builder()
-            ->setLayout(ComponentLayout::BASELINE)
-            ->setSpacing(ComponentSpacing::SM)
-            ->setContents([
-                TextComponentBuilder::builder()
-                    ->setText('ที่อยู่')
-                    ->setColor('#aaaaaa')
-                    ->setSize(ComponentFontSize::SM)
-                    ->setFlex(1),
-                TextComponentBuilder::builder()
-                    ->setText('Samsen, Bangkok')
-                    ->setWrap(true)
-                    ->setColor('#666666')
-                    ->setSize(ComponentFontSize::SM)
-                    ->setFlex(5)
-            ]);
-        $time = BoxComponentBuilder::builder()
-            ->setLayout(ComponentLayout::BASELINE)
-            ->setSpacing(ComponentSpacing::SM)
-            ->setContents([
-                TextComponentBuilder::builder()
-                    ->setText('Time')
-                    ->setColor('#aaaaaa')
-                    ->setSize(ComponentFontSize::SM)
-                    ->setFlex(1),
-                TextComponentBuilder::builder()
-                    ->setText('10:00 - 23:00')
-                    ->setWrap(true)
-                    ->setColor('#666666')
-                    ->setSize(ComponentFontSize::SM)
-                    ->setFlex(5)
-            ]);
-	    
-        $info = BoxComponentBuilder::builder()
-            ->setLayout(ComponentLayout::VERTICAL)
-            ->setMargin(ComponentMargin::LG)
-            ->setSpacing(ComponentSpacing::SM)
-            ->setContents([$place, $time]);*/
         return BoxComponentBuilder::builder()
             ->setLayout(ComponentLayout::VERTICAL)
             //->setContents([$review, $info]);
@@ -472,84 +417,3 @@ class ReplyTranslateMessage
             ->setContents([$websiteButton, $spacer]);
     }
 } 
-/*
-function pushMsg($arrayHeader,$arrayPostData){
-		 $strUrl ="https://api.line.me/v2/bot/message/push";
-		 $ch=curl_init();
-		 curl_setopt($ch,CURLOPT_URL,$strUrl);
-		 curl_setopt($ch,CURLOPT_HEADER,false);
-		 curl_setopt($ch,CURLOPT_POST,true);
-		 curl_setopt($ch,CURLOPT_HTTPHEADER,$arrayHeader);
-		 curl_setopt($ch,CURLOPT_POSTFIELDS,json_encode($arrayPostData));
-		 curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
-		 curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,false);
-		 $result=curl_exec($ch);
-		 curl_close($ch);
-		 }
-		 */
-  /*
-	 case '$เพิ่มรถ':
-              $x_tra = str_replace("#เพิ่มรถ ","", $text);
-              $pieces = explode("|", $x_tra);
-              $_licence_plate=$pieces[0];
-              $_brand=$pieces[1];
-              $_model=$pieces[2];
-              $_color=$pieces[3];
-              $_owner=$pieces[4];
-              $_user=$pieces[5];
-              $_note=$pieces[6];
-              //Post New Data
-              $newData = json_encode(array('licence_plate' => $_licence_plate,'brand'=> $_brand,'model'=> $_model,'color'=> $_color,'owner'=> $_owner,'user'=> $_user,'note'=> $_note) );
-              $opts = array('http' => array( 'method' => "POST",
-                                            'header' => "Content-type: application/json",
-                                            'content' => $newData
-                                             )
-                                          );
-              $url = 'https://api.mlab.com/api/1/databases/hooqline/collections/carregister?apiKey='.MLAB_API_KEY;
-              $context = stream_context_create($opts);
-              $returnValue = file_get_contents($url,false,$context);
-              if($returnValue)$text = 'เพิ่มรถสำเร็จแล้ว';
-              else $text="ไม่สามารถเพิ่มรถได้";
-              $bot->replyText($reply_token, $text);
-              break;
-	 case '$ทะเบียน':
-		  $json = file_get_contents('https://api.mlab.com/api/1/databases/hooqline/collections/carregister?apiKey='.MLAB_API_KEY.'&q={"licence_plate":"'.$explodeText[1].'"}');
-              $data = json_decode($json);
-              $isData=sizeof($data);
-              if($isData >0){
-		   $text="";
-		   $count=1;
-                foreach($data as $rec){
-                  $text= $text.$count.' '.$rec->licence_plate.' '.$rec->brand.' '.$rec->model.' '.$rec->color."\n ผู้ถือกรรมสิทธิ์ ".$rec->owner."\n ผู้ครอบครอง ".$rec->user."\n หมายเหตุ/ประวัติ ".$rec->note."\n\n";
-                  $count++;
-                }//end for each
-	      }else{
-		  $text= "ไม่พบข้อมูลทะเบียนรถ ".$explodeText[1];
-	      }
-                  $bot->replyText($reply_token, $text);
-                   break;
-          case '$เพิ่มคน':
-              $x_tra = str_replace("#เพิ่มคน ","", $text);
-              $pieces = explode("|", $x_tra);
-              $_name=$pieces[0];
-              $_surname=$pieces[1];
-              $_nickname=$pieces[2];
-              $_nickname2=$pieces[3];
-              $_telephone=$pieces[4];
-              $_jobposition=$pieces[5];
-              $_address=$pieces[6];
-              //Post New Data
-              $newData = json_encode(array('name' => $_name,'surname'=> $_surname,'nickname'=> $_nickname,'nickname2'=> $_nickname2,'telephone'=> $_telephone,'jobposition'=> $_jobposition,'address'=> $_address) );
-              $opts = array('http' => array( 'method' => "POST",
-                                            'header' => "Content-type: application/json",
-                                            'content' => $newData
-                                             )
-                                          );
-              $url = 'https://api.mlab.com/api/1/databases/hooqline/collections/intelphonebook?apiKey='.MLAB_API_KEY;
-              $context = stream_context_create($opts);
-              $returnValue = file_get_contents($url,false,$context);
-              if($returnValue)$text = 'เพิ่มคนสำเร็จแล้ว';
-              else $text="ไม่สามารถเพิ่มคนได้";
-              $bot->replyText($reply_token, $text);
-              break;
-      */

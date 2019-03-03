@@ -85,9 +85,30 @@ try {
 } catch(\LINE\LINEBot\Exception\InvalidEventRequestException $e) {
 	error_log('parseEventRequest failed. InvalidEventRequestException => '.var_export($e, true));
 }
+
+
 foreach ($events as $event) {
 	$replyToken = $event->getReplyToken();
 	$replyData='No Data';
+	// ส่วนตรวจสอบผู้ใช้
+	$groupId='';$roomId='';$userId=''; $userDisplayName='';// default value
+	$userId=$event->getUserId();
+	  if((!is_null($userId)){
+		$response = $bot->getProfile($userId);
+                if ($response->isSucceeded()) {// ดึงค่าโดยแปลจาก JSON String .ให้อยู่ใรูปแบบโครงสร้าง ตัวแปร array
+                   $userData = $response->getJSONDecodedBody(); // return array
+                            // $userData['userId'] // $userData['displayName'] // $userData['pictureUrl']                            // $userData['statusMessage']
+                   $userDisplayName = $userData['displayName'];
+		   $textReplyMessage = 'ตอบคุณ '.$userDisplayName.' User id : '.$userId;
+                   $textMessage = new TextMessageBuilder($textReplyMessage);
+		   $multiMessage->add($textMessage);
+	           $replyData = $multiMessage;
+	           $response = $bot->replyMessage($replyToken,$replyData);
+		
+		} // end if $response->isSucceeded();
+	    }//end is_null($userId);
+	    
+		// จบส่วนการตรวจสอบผู้ใช้
   // Postback Event
     if (($event instanceof \LINE\LINEBot\Event\PostbackEvent)) {
 		$logger->info('Postback message has come'); 

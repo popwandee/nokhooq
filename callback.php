@@ -106,11 +106,7 @@ foreach ($events as $event) {
                    $textMessage = new TextMessageBuilder($textReplyMessage);
 		   $multiMessage->add($textMessage);
 	           $replyData = $multiMessage;
-	           $response = $bot->replyMessage($replyToken,$replyData);
-		
-		
-	    }//end is_null($userId);
-	    
+	           $response = $bot->replyMessage($replyToken,$replyData); 
 		// จบส่วนการตรวจสอบผู้ใช้
   // Postback Event
     if (($event instanceof \LINE\LINEBot\Event\PostbackEvent)) {

@@ -113,14 +113,14 @@ foreach ($events as $event) {
         $text = strtolower($text);
         $explodeText=explode(" ",$text);
 	$textReplyMessage="initial output";
-	$textMessage = new TextMessageBuilder($event);
-	$multiMessage->add($textMessage);
-	$replyData = $multiMessage;
+	//$textMessage = new TextMessageBuilder($event);
+	//$multiMessage->add($textMessage);
+	//$replyData = $multiMessage;
 	                    
-             $bot->replyText($replyToken, $event);
+             $response = $bot->replyText($replyToken, $event);
 
 	   // ส่วนส่งกลับข้อมูลให้ LINE
-           $response = $bot->replyMessage($replyToken,$replyData);
+          // $response = $bot->replyMessage($replyToken,$replyData);
            if ($response->isSucceeded()) {
               echo 'Succeeded!';
               }

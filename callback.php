@@ -91,12 +91,6 @@ foreach ($events as $event) {
   // Postback Event
     if (($event instanceof \LINE\LINEBot\Event\PostbackEvent)) {
 		$logger->info('Postback message has come'); 
-	        $multiMessage =     new MultiMessageBuilder;
-	        $textReplyMessage= "Postback message has come";
-                $textMessage = new TextMessageBuilder($textReplyMessage);
-		$multiMessage->add($textMessage);
-	        $replyData = $multiMessage;
-	        $response = $bot->replyMessage($replyToken,$replyData);
 		continue;
 	}
 	// Location Event
@@ -116,35 +110,15 @@ foreach ($events as $event) {
         $explodeText=explode(" ",$text);
 	$textReplyMessage="";
         $multiMessage =     new MultiMessageBuilder;
-	   
-	$groupId='';$roomId='';$userId=''; $userDisplayName='';// default value
-	
-	    // ส่วนตรวจสอบผู้ใช้
-		$userId=$event->getUserId();
-	  if((!is_null($userId)){
-		$response = $bot->getProfile($userId);
-                if ($response->isSucceeded()) {// ดึงค่าโดยแปลจาก JSON String .ให้อยู่ใรูปแบบโครงสร้าง ตัวแปร array
-                   $userData = $response->getJSONDecodedBody(); // return array
-                            // $userData['userId'] // $userData['displayName'] // $userData['pictureUrl']                            // $userData['statusMessage']
-                   $userDisplayName = $userData['displayName'];
-		   //$bot->replyText($replyToken, $userDisplayName); ใช้ตรวจสอบว่าผู้ถาม ชื่อ อะไร
-		   $textReplyMessage = 'ตอบคุณ '.$userDisplayName.' User id : '.$userId;
-                   $textMessage = new TextMessageBuilder($textReplyMessage);
-		   $multiMessage->add($textMessage);
-	           $replyData = $multiMessage;
-	           $response = $bot->replyMessage($replyToken,$replyData);
-		
-		}
-	    }//end is_null($userId);
-	    
-		// จบส่วนการตรวจสอบผู้ใช้
-	
-      
+	$textMessage = new TextMessageBuilder($textReplyMessage);
+	$multiMessage->add($textMessage);
+	$replyData = $multiMessage;
+	       
+
 	   // ส่วนส่งกลับข้อมูลให้ LINE
            $response = $bot->replyMessage($replyToken,$replyData);
            if ($response->isSucceeded()) {
               echo 'Succeeded!';
-              return;
               }
               // Failed ส่งข้อความไม่สำเร็จ
              $statusMessage = $response->getHTTPStatus() . ' ' . $response->getRawBody();

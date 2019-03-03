@@ -85,29 +85,13 @@ try {
 } catch(\LINE\LINEBot\Exception\InvalidEventRequestException $e) {
 	error_log('parseEventRequest failed. InvalidEventRequestException => '.var_export($e, true));
 }
-$content = file_get_contents('php://input');
-$arrayJson = json_decode($content, true);
- if(isset($arrayJson['events'][0]['source']['userId']){
-      $userId = $arrayJson['events'][0]['source']['userId'];
-   }
-   else if(isset($arrayJson['events'][0]['source']['groupId'])){
-      $userId = $arrayJson['events'][0]['source']['groupId'];
-   }
-   else if(isset($arrayJson['events'][0]['source']['room'])){
-      $userId = $arrayJson['events'][0]['source']['room'];
-   }
+
 
 foreach ($events as $event) {
 	$replyToken = $event->getReplyToken();
 	$replyData='No Data';
 	$multiMessage = new MultiMessageBuilder;
-	// ส่วนตรวจสอบผู้ใช้
-		   $textReplyMessage = 'ตอบคุณ User id : '.$userId;
-                   $textMessage = new TextMessageBuilder($textReplyMessage);
-		   $multiMessage->add($textMessage);
-	           $replyData = $multiMessage;
-	           $response = $bot->replyMessage($replyToken,$replyData); 
-		// จบส่วนการตรวจสอบผู้ใช้
+	
   // Postback Event
     if (($event instanceof \LINE\LINEBot\Event\PostbackEvent)) {
 		$logger->info('Postback message has come'); 

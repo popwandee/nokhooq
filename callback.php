@@ -124,7 +124,7 @@ foreach ($events as $event) {
 	//$multiMessage->add($textMessage);
 	//$replyData = $multiMessage;
 	                    
-             $response = $bot->replyText($replyToken, $userId);
+            // $response = $bot->replyText($replyToken, $userId);
 
 	   // ส่วนส่งกลับข้อมูลให้ LINE
           // $response = $bot->replyMessage($replyToken,$replyData);

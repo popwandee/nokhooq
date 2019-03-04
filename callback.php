@@ -93,50 +93,7 @@ try {
 }
 
 
-foreach ($events as $event) {
-	$replyToken = $event->getReplyToken();
-	$replyData='No Data';
-	$multiMessage = new MultiMessageBuilder;
-	
-  // Postback Event
-    if (($event instanceof \LINE\LINEBot\Event\PostbackEvent)) {
-		$logger->info('Postback message has come'); 
-		continue;
-	}
-	// Location Event
-    if  ($event instanceof LINE\LINEBot\Event\MessageEvent\LocationMessage) {
-		$logger->info("location -> ".$event->getLatitude().",".$event->getLongitude());
-	        $multiMessage =     new MultiMessageBuilder;
-	        $textReplyMessage= "location -> ".$event->getLatitude().",".$event->getLongitude();
-                $textMessage = new TextMessageBuilder($textReplyMessage);
-		$multiMessage->add($textMessage);
-	        $replyData = $multiMessage;
-	        $response = $bot->replyMessage($replyToken,$replyData);
-		continue;
-	}
-    if ($event instanceof \LINE\LINEBot\Event\MessageEvent\TextMessage) {
-        $text = $event->getText();
-        $text = strtolower($text);
-        $explodeText=explode(" ",$text);
-	$textReplyMessage="initial output";
-	    $userId=$event->getUserId();
-	//$textMessage = new TextMessageBuilder($event);
-	//$multiMessage->add($textMessage);
-	//$replyData = $multiMessage;
-	                    
-            // $response = $bot->replyText($replyToken, $userId);
 
-	   // ส่วนส่งกลับข้อมูลให้ LINE
-          // $response = $bot->replyMessage($replyToken,$replyData);
-           if ($response->isSucceeded()) {
-              echo 'Succeeded!';
-              }
-              // Failed ส่งข้อความไม่สำเร็จ
-             $statusMessage = $response->getHTTPStatus() . ' ' . $response->getRawBody();
-             echo $statusMessage;
-             //$bot->replyText($replyToken, $statusMessage);
-         }//end if event is textMessage
-}// end foreach event
 class ReplyTranslateMessage
 {
     /**

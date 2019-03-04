@@ -134,7 +134,7 @@ foreach ($events as $event) {
               // Failed ส่งข้อความไม่สำเร็จ
              $statusMessage = $response->getHTTPStatus() . ' ' . $response->getRawBody();
              echo $statusMessage;
-             $bot->replyText($replyToken, $statusMessage);
+             //$bot->replyText($replyToken, $statusMessage);
          }//end if event is textMessage
 }// end foreach event
 class ReplyTranslateMessage

@@ -35,7 +35,6 @@ use LINE\LINEBot\MessageBuilder\MultiMessageBuilder;
 use LINE\LINEBot\MessageBuilder\LocationMessageBuilder;
 use LINE\LINEBot\MessageBuilder\AudioMessageBuilder;
 use LINE\LINEBot\MessageBuilder\VideoMessageBuilder;
-use LINE\LINEBot\MessageBuilder\TemplateMessageBuilder;
 use LINE\LINEBot\ImagemapActionBuilder;
 use LINE\LINEBot\ImagemapActionBuilder\AreaBuilder;
 use LINE\LINEBot\ImagemapActionBuilder\ImagemapMessageActionBuilder ;
@@ -45,9 +44,6 @@ use LINE\LINEBot\TemplateActionBuilder\DatetimePickerTemplateActionBuilder;
 use LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder;
 use LINE\LINEBot\TemplateActionBuilder\PostbackTemplateActionBuilder;
 use LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder;
-use LINE\LINEBot\TemplateActionBuilder\CameraRollTemplateActionBuilder;
-use LINE\LINEBot\TemplateActionBuilder\CameraTemplateActionBuilder;
-use LINE\LINEBot\TemplateActionBuilder\LocationTemplateActionBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateMessageBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ButtonTemplateBuilder;
@@ -68,13 +64,11 @@ use LINE\LINEBot\MessageBuilder\Flex\ContainerBuilder\BubbleContainerBuilder;
 use LINE\LINEBot\MessageBuilder\Flex\ComponentBuilder\SpacerComponentBuilder;
 use LINE\LINEBot\QuickReplyBuilder\ButtonBuilder\QuickReplyButtonBuilder;
 use LINE\LINEBot\QuickReplyBuilder\QuickReplyMessageBuilder;
-
-use LINE\LINEBot\Event\MessageEvent\TextMessage;
 $logger = new Logger('LineBot');
 $logger->pushHandler(new StreamHandler('php://stderr', Logger::DEBUG));
 define("MLAB_API_KEY", '6QxfLc4uRn3vWrlgzsWtzTXBW7CYVsQv');
-define("LINE_MESSAGING_API_CHANNEL_SECRET", '6f6b7e3b1aff242cd4fb0fa3113f7af3');
-define("LINE_MESSAGING_API_CHANNEL_TOKEN", 'RvsMabRN/IlT2BtmEoH+KcIbha8F/aPLWWzMKj8lxz/7f9c/Ygu5qvrUGtdlrTwyQwR5tFcgIGGzCkHO/SzIKrdCqUm+sal4t73YOuTPZsQX4bR35g3ZJGTvFilxvO1LVO/I6B1ouhx3UjGWe+OwswdB04t89/1O/w1cDnyilFU=');
+define("LINE_MESSAGING_API_CHANNEL_SECRET", 'eb6cf532359c17403e5e20339b389466');
+define("LINE_MESSAGING_API_CHANNEL_TOKEN", 'yf5kpt5rDBiNTVwoI/tkKWlCXvD2fJBq9dDKfqxcuu7qIwf+auxo5hs3wGJsj0Shq5UCfkhGf8gLrcB4PluHJ4ViBppUh5/6PllJ4xi7z+dMUTaNwLa3FXC+FwgVqSvbn7WGnUASUMtkgsh/9dhl9AdB04t89/1O/w1cDnyilFU=');
 $bot = new \LINE\LINEBot(
     new \LINE\LINEBot\HTTPClient\CurlHTTPClient(LINE_MESSAGING_API_CHANNEL_TOKEN),
     ['channelSecret' => LINE_MESSAGING_API_CHANNEL_SECRET]
@@ -92,6 +86,274 @@ try {
 	error_log('parseEventRequest failed. InvalidEventRequestException => '.var_export($e, true));
 }
 
+foreach ($events as $event) {
+	$replyToken = $event->getReplyToken();
+	$replyData='No Data';
+
+  // Postback Event
+    if (($event instanceof \LINE\LINEBot\Event\PostbackEvent)) {
+		$logger->info('Postback message has come');
+		continue;
+	}
+	// Location Event
+    if  ($event instanceof LINE\LINEBot\Event\MessageEvent\LocationMessage) {
+		$logger->info("location -> ".$event->getLatitude().",".$event->getLongitude());
+	        $multiMessage =     new MultiMessageBuilder;
+	        $textReplyMessage= "location -> ".$event->getLatitude().",".$event->getLongitude();
+                $textMessage = new TextMessageBuilder($textReplyMessage);
+		$multiMessage->add($textMessage);
+	        $replyData = $multiMessage;
+	        $response = $bot->replyMessage($replyToken,$replyData);
+		continue;
+	}
+    if ($event instanceof \LINE\LINEBot\Event\MessageEvent\TextMessage) {
+
+        $text = $event->getText();
+        $text = strtolower($text);
+        $explodeText=explode(" ",$text);
+	$textReplyMessage="";
+
+        $multiMessage =     new MultiMessageBuilder;
+
+	$groupId='';$roomId=''; $userDisplayName='';// default value
+
+	    // ส่วนตรวจสอบผู้ใช้
+		$userId=$event->getUserId();
+	   if((!is_null($userId)){
+		$response = $bot->getProfile($userId);
+                if ($response->isSucceeded()) {// ดึงค่าโดยแปลจาก JSON String .ให้อยู่ใรูปแบบโครงสร้าง ตัวแปร array
+                   $userData = $response->getJSONDecodedBody(); // return array
+                            // $userData['userId'] // $userData['displayName'] // $userData['pictureUrl']                            // $userData['statusMessage']
+                   $userDisplayName = $userData['displayName'];
+		   $bot->replyText($replyToken, $userDisplayName); ใช้ตรวจสอบว่าผู้ถาม ชื่อ อะไร
+		}else{
+		 //$bot->replyText($replyToken, $userId);  ใช้ตรวจสอบว่าผู้ถาม ID อะไร
+			$userDisplayName = $userId;
+		}// end get profile
+	   }//end is_null($userId);
+	     $textReplyMessage = 'ตอบคุณ '.$userDisplayName.' User id : '.$userId;
+                    $textMessage = new TextMessageBuilder($textReplyMessage);
+		    $multiMessage->add($textMessage);
+		// จบส่วนการตรวจสอบผู้ใช้
+	
+
+      switch ($explodeText[0]) {
+
+	case '#p':
+		/* ส่วนดึงข้อมูลจากฐานข้อมูล */
+		if (!is_null($explodeText[1])){
+		   $json = file_get_contents('https://api.mlab.com/api/1/databases/hooqline/collections/people?apiKey='.MLAB_API_KEY.'&q={"nationid":"'.$explodeText[1].'"}');
+                   $data = json_decode($json);
+                   $isData=sizeof($data);
+
+                 if($isData >0){
+		    $count=1;
+                    foreach($data as $rec){
+			   $count++;
+                           $textReplyMessage= "\nหมายเลข ปชช. ".$rec->nationid."\nชื่อ".$rec->name."\nที่อยู่".$rec->address."\nหมายเหตุ".$rec->note;
+                          /* $textMessage = new TextMessageBuilder($textReplyMessage);
+			   $multiMessage->add($textMessage);
+			   $textReplyMessage= "https://www.hooq.info/img/$rec->nationid.png";
+                           $textMessage = new TextMessageBuilder($textReplyMessage);
+			   $multiMessage->add($textMessage);
+			   $picFullSize = "https://www.hooq.info/img/$rec->nationid.png";
+                           $picThumbnail = "https://www.hooq.info/img/$rec->nationid.png";
+			   $imageMessage = new ImageMessageBuilder($picFullSize,$picThumbnail);
+			   $multiMessage->add($imageMessage);
+			    */
+			    
+			   $picFullSize = "https://www.hooq.info/img/$rec->nationid.png";
+                           }//end for each
+	           // $replyData = $multiMessage;
+			 
+		     $flexData = new ReplyTranslateMessage;
+                     $replyData = $flexData->get($explodeText[1],$textReplyMessage,$picFullSize);
+			
+			 
+		   }else{ //$isData <0  ไม่พบข้อมูลที่ค้นหา
+		          $textReplyMessage= "ไม่พบ ".$explodeText[1]."  ในฐานข้อมูลของหน่วย";
+			  $textMessage = new TextMessageBuilder($textReplyMessage);
+			  $multiMessage->add($textMessage);
+			 
+			  $replyData = $multiMessage;
+			
+		        } // end $isData>0
+		   }else{ // no $explodeText[1]
+	                $textReplyMessage= "คุณให้ข้อมูลในการสอบถามไม่ครบถ้วนค่ะ,/n กรุณาพิมพ์ #p เว้นวรรค ตามด้วยหมายเลข ปชช. ค่ะ";
+			$textMessage = new TextMessageBuilder($textReplyMessage);
+			  $multiMessage->add($textMessage);
+			 
+			  $replyData = $multiMessage;
+			
+		   }// end !is_null($explodeText[1])
+		/* จบส่วนดึงข้อมูลจากฐานข้อมูล */
+
+
+		break; // break case #i
+    case '$เพิ่มคน':
+              $x_tra = str_replace("#เพิ่มคน ","", $text);
+              $pieces = explode("|", $x_tra);
+	         
+              $_nationid=$pieces[0];
+              $_name=$pieces[1];
+              $_address=$pieces[2];
+              $_note=$pieces[3];
+            
+              //Post New Data
+
+              $newData = json_encode(array('nationid' => $_nationid,'name'=> $_name,'address'=> $_address,'note'=> $_note) );
+              $opts = array('http' => array( 'method' => "POST",
+                                            'header' => "Content-type: application/json",
+                                            'content' => $newData
+                                             )
+                                          );
+              $url = 'https://api.mlab.com/api/1/databases/hooqline/collections/people?apiKey='.MLAB_API_KEY;
+              $context = stream_context_create($opts);
+              $returnValue = file_get_contents($url,false,$context);
+              if($returnValue)$text = 'เพิ่มคนสำเร็จแล้ว';
+              else $text="ไม่สามารถเพิ่มคนได้";
+              $bot->replyText($reply_token, $text);
+              break;
+
+  case '$lisa':
+
+            //Post New Data
+		    $indexCount=1;$answer='';
+	    foreach($explodeText as $rec){
+		    $indexCount++;
+		    if($indexCount>1){
+		    $answer= $answer." ".$explodeText[$indexCount];
+		    }
+	    }
+            $newData = json_encode(array('question' => $explodeText[1],'answer'=> $answer) );
+            $opts = array('http' => array( 'method' => "POST",
+                                          'header' => "Content-type: application/json",
+                                          'content' => $newData
+                                           )
+                                        );
+            // เพิ่มเงื่อนไข ตรวจสอบว่ามีข้อมูลในฐานข้อมูลหรือยัง
+
+            $url = 'https://api.mlab.com/api/1/databases/hooqline/collections/hooqbot?apiKey='.MLAB_API_KEY.'';
+            $context = stream_context_create($opts);
+            $returnValue = file_get_contents($url,false,$context);
+            if($returnValue){
+		    $text =  'ขอบคุณที่สอนลิซ่าค่ะ';
+		    $text2 = 'ลิซ่าจำได้แล้วว่า '.$explodeText[1]." คือ ".$answer;
+	    }else{ $text="Cannot teach Lisa";
+		  $text2 = '';
+		 }
+            
+          
+		     $flexData = new ReplyTranslateMessage;
+		     $image=rand(1,409);
+	             $picFullSize = "https://www.hooq.info/photos/$image.jpg";
+                     $replyData = $flexData->get($text,$text2,$picFullSize);
+            break;
+		      // ---------------------------------------------------------------------------//
+
+ case 'แปล':
+             //$text_parameter = str_replace("แปล ","", $text);
+             //$text_parameter = str_replace("แปล ","", $text_parameter);
+             $source = 'th';
+           $text_parameter = str_replace("แปล ","", $text);  
+           if (!is_null($explodeText[1])){
+		   switch ($explodeText[1]) {
+			case 'cn': $target = 'zh-CN' ;$text_parameter = str_replace("cn","", $text_parameter); break;
+			case 'ko': $target = 'ko' ;$text_parameter = str_replace("ko","", $text_parameter); break;
+			case 'de': $target = 'de' ;$text_parameter = str_replace("de","", $text_parameter); break;
+			default: $target = 'en'; break;
+		   }// end switch
+	   }// end if
+             $trans = new GoogleTranslate();
+            $result = "แปลว่า\n".$trans->translate($source, $target, $text_parameter)."\nค่ะ";
+		       $question = $text_parameter;
+		     $answer = $result;
+		     $flexData = new ReplyTranslateMessage;
+		     $image=rand(1,409);
+	             $picFullSize = "https://www.hooq.info/photos/$image.jpg";
+                     $replyData = $flexData->get($question,$answer,$picFullSize);
+             
+                break;
+case 'tran':
+            $text_parameter = str_replace("tran ","", $text);
+            $text_parameter = str_replace("tran ","", $text_parameter);
+            $source = 'en';
+            $target = 'th';
+            $trans = new GoogleTranslate();
+            $result = "แปลว่า\n".$trans->translate($source, $target, $text_parameter)."\nค่ะ";
+           $question = $text_parameter;
+		      $answer = $result;
+		     $flexData = new ReplyTranslateMessage;
+		     $image=rand(1,409);
+	             $picFullSize = "https://www.hooq.info/photos/$image.jpg";
+                     $replyData = $flexData->get($question,$answer,$picFullSize);
+                               break;
+case '#tran':
+		      
+            $text_parameter = str_replace("#tran ","", $text);  
+           if (!is_null($explodeText[1])){
+		   switch ($explodeText[1]) {
+			case 'cn': $source = 'zh-CN' ;$text_parameter = str_replace("cn","", $text_parameter); break;
+			case 'ko': $source = 'ko' ;$text_parameter = str_replace("ko","", $text_parameter); break;
+			case 'de': $source = 'de' ;$text_parameter = str_replace("de","", $text_parameter); break;
+			default: $source = 'en'; break;
+		   }// end switch
+	   }// end if
+            $target = 'th';
+            $trans = new GoogleTranslate();
+            $result = "แปลว่า\n".$trans->translate($source, $target, $text_parameter)."\nค่ะ";
+           $question = $text_parameter;
+		      $answer = $result;
+		     $flexData = new ReplyTranslateMessage;
+		     $image=rand(1,409);
+	             $picFullSize = "https://www.hooq.info/photos/$image.jpg";
+                     $replyData = $flexData->get($question,$answer,$picFullSize);
+                               break;
+
+          default:
+
+              $json = file_get_contents('https://api.mlab.com/api/1/databases/hooqline/collections/hooqbot?apiKey='.MLAB_API_KEY.'&q={"question":"'.$explodeText[0].'"}');
+              $data = json_decode($json);
+              $isData=sizeof($data);
+		  $text='';
+              if($isData >0){
+                foreach($data as $rec){
+                  $text= $text.$rec->answer."\n";
+                  //-----------------------
+                }//end for each
+              }else{
+                  $text='';
+		      break;
+                  //$text= $explodeText[0];
+                  //$bot->replyText($reply_token, $text);
+              }//end no data from server
+
+
+                $textReplyMessage= $text;		          
+		     
+		//$picFullSize = "https://www.hooq.info/RTA/$image.jpg";
+                      $question = $explodeText[0];
+		      $answer = $text;
+		     $flexData = new ReplyTranslateMessage;
+		     $image=rand(1,409);
+	             $picFullSize = "https://www.hooq.info/photos/$image.jpg";
+                     $replyData = $flexData->get($question,$answer,$picFullSize);
+		break;
+            }//end switch
+
+	   // ส่วนส่งกลับข้อมูลให้ LINE
+           $response = $bot->replyMessage($replyToken,$replyData);
+           if ($response->isSucceeded()) {
+              echo 'Succeeded!';
+              return;
+              }
+
+              // Failed ส่งข้อความไม่สำเร็จ
+             $statusMessage = $response->getHTTPStatus() . ' ' . $response->getRawBody();
+             echo $statusMessage;
+             $bot->replyText($replyToken, $statusMessage);
+         }//end if event is textMessage
+}// end foreach event
 
 
 class ReplyTranslateMessage
@@ -144,6 +406,46 @@ class ReplyTranslateMessage
             //->setMargin(ComponentMargin::SM)
             ->setSpacing(ComponentSpacing::SM)
             ->setContents([$title,$textDetail]);
+	
+	    /*    
+        $place = BoxComponentBuilder::builder()
+            ->setLayout(ComponentLayout::BASELINE)
+            ->setSpacing(ComponentSpacing::SM)
+            ->setContents([
+                TextComponentBuilder::builder()
+                    ->setText('ที่อยู่')
+                    ->setColor('#aaaaaa')
+                    ->setSize(ComponentFontSize::SM)
+                    ->setFlex(1),
+                TextComponentBuilder::builder()
+                    ->setText('Samsen, Bangkok')
+                    ->setWrap(true)
+                    ->setColor('#666666')
+                    ->setSize(ComponentFontSize::SM)
+                    ->setFlex(5)
+            ]);
+        $time = BoxComponentBuilder::builder()
+            ->setLayout(ComponentLayout::BASELINE)
+            ->setSpacing(ComponentSpacing::SM)
+            ->setContents([
+                TextComponentBuilder::builder()
+                    ->setText('Time')
+                    ->setColor('#aaaaaa')
+                    ->setSize(ComponentFontSize::SM)
+                    ->setFlex(1),
+                TextComponentBuilder::builder()
+                    ->setText('10:00 - 23:00')
+                    ->setWrap(true)
+                    ->setColor('#666666')
+                    ->setSize(ComponentFontSize::SM)
+                    ->setFlex(5)
+            ]);
+	    
+        $info = BoxComponentBuilder::builder()
+            ->setLayout(ComponentLayout::VERTICAL)
+            ->setMargin(ComponentMargin::LG)
+            ->setSpacing(ComponentSpacing::SM)
+            ->setContents([$place, $time]);*/
         return BoxComponentBuilder::builder()
             ->setLayout(ComponentLayout::VERTICAL)
             //->setContents([$review, $info]);
@@ -164,183 +466,68 @@ class ReplyTranslateMessage
             ->setFlex(0)
             ->setContents([$websiteButton, $spacer]);
     }
+
 } 
 
-class TextMessageHandler 
-{
-    /** @var LINEBot $bot */
-    private $bot;
-    /** @var \Monolog\Logger $logger */
-    private $logger;
-    /** @var \Slim\Http\Request $logger */
-    private $req;
-    /** @var TextMessage $textMessage */
-    private $textMessage;
-    /**
-     * TextMessageHandler constructor.
-     * @param $bot
-     * @param $logger
-     * @param \Slim\Http\Request $req
-     * @param TextMessage $textMessage
-     */
-    public function __construct($bot, $logger, \Slim\Http\Request $req, TextMessage $textMessage)
-    {
-        $this->bot = $bot;
-        $this->logger = $logger;
-        $this->req = $req;
-        $this->textMessage = $textMessage;
-    }
-    public function handle()
-    {
-        $text = $this->textMessage->getText();
-        $replyToken = $this->textMessage->getReplyToken();
-        $this->logger->info("Got text message from $replyToken: $text");
-        switch ($text) {
-            case 'profile':
-                $userId = $this->textMessage->getUserId();
-                $this->sendProfile($replyToken, $userId);
-                break;
-            case 'bye':
-                if ($this->textMessage->isRoomEvent()) {
-                    $this->bot->replyText($replyToken, 'Leaving room');
-                    $this->bot->leaveRoom($this->textMessage->getRoomId());
-                    break;
-                }
-                if ($this->textMessage->isGroupEvent()) {
-                    $this->bot->replyText($replyToken, 'Leaving group');
-                    $this->bot->leaveGroup($this->textMessage->getGroupId());
-                    break;
-                }
-                $this->bot->replyText($replyToken, 'Bot cannot leave from 1:1 chat');
-                break;
-            case 'confirm':
-                $this->bot->replyMessage(
-                    $replyToken,
-                    new TemplateMessageBuilder(
-                        'Confirm alt text',
-                        new ConfirmTemplateBuilder('Do it?', [
-                            new MessageTemplateActionBuilder('Yes', 'Yes!'),
-                            new MessageTemplateActionBuilder('No', 'No!'),
-                        ])
-                    )
-                );
-                break;
-            case 'buttons':
-                $imageUrl = UrlBuilder::buildUrl($this->req, ['static', 'buttons', '1040.jpg']);
-                $buttonTemplateBuilder = new ButtonTemplateBuilder(
-                    'My button sample',
-                    'Hello my button',
-                    $imageUrl,
-                    [
-                        new UriTemplateActionBuilder('Go to line.me', 'https://line.me'),
-                        new PostbackTemplateActionBuilder('Buy', 'action=buy&itemid=123'),
-                        new PostbackTemplateActionBuilder('Add to cart', 'action=add&itemid=123'),
-                        new MessageTemplateActionBuilder('Say message', 'hello hello'),
-                    ]
-                );
-                $templateMessage = new TemplateMessageBuilder('Button alt text', $buttonTemplateBuilder);
-                $this->bot->replyMessage($replyToken, $templateMessage);
-                break;
-            case 'carousel':
-                $imageUrl = UrlBuilder::buildUrl($this->req, ['static', 'buttons', '1040.jpg']);
-                $carouselTemplateBuilder = new CarouselTemplateBuilder([
-                    new CarouselColumnTemplateBuilder('foo', 'bar', $imageUrl, [
-                        new UriTemplateActionBuilder('Go to line.me', 'https://line.me'),
-                        new PostbackTemplateActionBuilder('Buy', 'action=buy&itemid=123'),
-                    ]),
-                    new CarouselColumnTemplateBuilder('buz', 'qux', $imageUrl, [
-                        new PostbackTemplateActionBuilder('Add to cart', 'action=add&itemid=123'),
-                        new MessageTemplateActionBuilder('Say message', 'hello hello'),
-                    ]),
-                ]);
-                $templateMessage = new TemplateMessageBuilder('Button alt text', $carouselTemplateBuilder);
-                $this->bot->replyMessage($replyToken, $templateMessage);
-                break;
-            case 'imagemap':
-                $richMessageUrl = UrlBuilder::buildUrl($this->req, ['static', 'rich']);
-                $imagemapMessageBuilder = new ImagemapMessageBuilder(
-                    $richMessageUrl,
-                    'This is alt text',
-                    new BaseSizeBuilder(1040, 1040),
-                    [
-                        new ImagemapUriActionBuilder(
-                            'https://store.line.me/family/manga/en',
-                            new AreaBuilder(0, 0, 520, 520)
-                        ),
-                        new ImagemapUriActionBuilder(
-                            'https://store.line.me/family/music/en',
-                            new AreaBuilder(520, 0, 520, 520)
-                        ),
-                        new ImagemapUriActionBuilder(
-                            'https://store.line.me/family/play/en',
-                            new AreaBuilder(0, 520, 520, 520)
-                        ),
-                        new ImagemapMessageActionBuilder(
-                            'URANAI!',
-                            new AreaBuilder(520, 520, 520, 520)
-                        )
-                    ]
-                );
-                $this->bot->replyMessage($replyToken, $imagemapMessageBuilder);
-                break;
-            case 'restaurant':
-                $flexMessageBuilder = FlexSampleRestaurant::get();
-                $this->bot->replyMessage($replyToken, $flexMessageBuilder);
-                break;
-            case 'shopping':
-                $flexMessageBuilder = FlexSampleShopping::get();
-                $this->bot->replyMessage($replyToken, $flexMessageBuilder);
-                break;
-            case 'quickReply':
-                $postback = new PostbackTemplateActionBuilder('Buy', 'action=quickBuy&itemid=222', 'Buy');
-                $datetimePicker = new DatetimePickerTemplateActionBuilder(
-                    'Select date',
-                    'storeId=12345',
-                    'datetime',
-                    '2017-12-25t00:00',
-                    '2018-01-24t23:59',
-                    '2017-12-25t00:00'
-                );
-                $quickReply = new QuickReplyMessageBuilder([
-                    new QuickReplyButtonBuilder(new LocationTemplateActionBuilder('Location')),
-                    new QuickReplyButtonBuilder(new CameraTemplateActionBuilder('Camera')),
-                    new QuickReplyButtonBuilder(new CameraRollTemplateActionBuilder('Camera roll')),
-                    new QuickReplyButtonBuilder($postback),
-                    new QuickReplyButtonBuilder($datetimePicker),
-                ]);
-                $messageTemplate = new TextMessageBuilder('Text with quickReply buttons', $quickReply);
-                $this->bot->replyMessage($replyToken, $messageTemplate);
-                break;
-            default:
-                $this->echoBack($replyToken, $text);
-                break;
-        }
-    }
-    /**
-     * @param string $replyToken
-     * @param string $text
-     */
-    private function echoBack($replyToken, $text)
-    {
-        $this->logger->info("Returns echo message $replyToken: $text");
-        $this->bot->replyText($replyToken, $text);
-    }
-    private function sendProfile($replyToken, $userId)
-    {
-        if (!isset($userId)) {
-            $this->bot->replyText($replyToken, "Bot can't use profile API without user ID");
-            return;
-        }
-        $response = $this->bot->getProfile($userId);
-        if (!$response->isSucceeded()) {
-            $this->bot->replyText($replyToken, $response->getRawBody());
-            return;
-        }
-        $profile = $response->getJSONDecodedBody();
-        $this->bot->replyText(
-            $replyToken,
-            'Display name: ' . $profile['displayName'],
-            'Status message: ' . $profile['statusMessage']
-        );
-    }
-}
+/*
+function pushMsg($arrayHeader,$arrayPostData){
+		 $strUrl ="https://api.line.me/v2/bot/message/push";
+		 $ch=curl_init();
+		 curl_setopt($ch,CURLOPT_URL,$strUrl);
+		 curl_setopt($ch,CURLOPT_HEADER,false);
+		 curl_setopt($ch,CURLOPT_POST,true);
+		 curl_setopt($ch,CURLOPT_HTTPHEADER,$arrayHeader);
+		 curl_setopt($ch,CURLOPT_POSTFIELDS,json_encode($arrayPostData));
+		 curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+		 curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,false);
+		 $result=curl_exec($ch);
+		 curl_close($ch);
+		 }
+		 */
+
+  /*
+	 case '$เพิ่มรถ':
+              $x_tra = str_replace("#เพิ่มรถ ","", $text);
+              $pieces = explode("|", $x_tra);
+              $_licence_plate=$pieces[0];
+              $_brand=$pieces[1];
+              $_model=$pieces[2];
+              $_color=$pieces[3];
+              $_owner=$pieces[4];
+              $_user=$pieces[5];
+              $_note=$pieces[6];
+              //Post New Data
+              $newData = json_encode(array('licence_plate' => $_licence_plate,'brand'=> $_brand,'model'=> $_model,'color'=> $_color,'owner'=> $_owner,'user'=> $_user,'note'=> $_note) );
+              $opts = array('http' => array( 'method' => "POST",
+                                            'header' => "Content-type: application/json",
+                                            'content' => $newData
+                                             )
+                                          );
+              $url = 'https://api.mlab.com/api/1/databases/hooqline/collections/carregister?apiKey='.MLAB_API_KEY;
+              $context = stream_context_create($opts);
+              $returnValue = file_get_contents($url,false,$context);
+              if($returnValue)$text = 'เพิ่มรถสำเร็จแล้ว';
+              else $text="ไม่สามารถเพิ่มรถได้";
+              $bot->replyText($reply_token, $text);
+
+              break;
+	 case '$ทะเบียน':
+		  $json = file_get_contents('https://api.mlab.com/api/1/databases/hooqline/collections/carregister?apiKey='.MLAB_API_KEY.'&q={"licence_plate":"'.$explodeText[1].'"}');
+              $data = json_decode($json);
+              $isData=sizeof($data);
+              if($isData >0){
+		   $text="";
+		   $count=1;
+                foreach($data as $rec){
+                  $text= $text.$count.' '.$rec->licence_plate.' '.$rec->brand.' '.$rec->model.' '.$rec->color."\n ผู้ถือกรรมสิทธิ์ ".$rec->owner."\n ผู้ครอบครอง ".$rec->user."\n หมายเหตุ/ประวัติ ".$rec->note."\n\n";
+                  $count++;
+                }//end for each
+	      }else{
+		  $text= "ไม่พบข้อมูลทะเบียนรถ ".$explodeText[1];
+	      }
+                  $bot->replyText($reply_token, $text);
+                   break;
+         
+
+
+      */

@@ -115,27 +115,6 @@ foreach ($events as $event) {
 
         $multiMessage =     new MultiMessageBuilder;
 
-	$groupId='';$roomId=''; $userDisplayName='';// default value
-
-	    // ส่วนตรวจสอบผู้ใช้
-		$userId=$event->getUserId();
-	   if((!is_null($userId)){
-		$response = $bot->getProfile($userId);
-                if ($response->isSucceeded()) {// ดึงค่าโดยแปลจาก JSON String .ให้อยู่ใรูปแบบโครงสร้าง ตัวแปร array
-                   $userData = $response->getJSONDecodedBody(); // return array
-                            // $userData['userId'] // $userData['displayName'] // $userData['pictureUrl']                            // $userData['statusMessage']
-                   $userDisplayName = $userData['displayName'];
-		   $bot->replyText($replyToken, $userDisplayName); ใช้ตรวจสอบว่าผู้ถาม ชื่อ อะไร
-		}else{
-		 //$bot->replyText($replyToken, $userId);  ใช้ตรวจสอบว่าผู้ถาม ID อะไร
-			$userDisplayName = $userId;
-		}// end get profile
-	   }//end is_null($userId);
-	     $textReplyMessage = 'ตอบคุณ '.$userDisplayName.' User id : '.$userId;
-                    $textMessage = new TextMessageBuilder($textReplyMessage);
-		    $multiMessage->add($textMessage);
-		// จบส่วนการตรวจสอบผู้ใช้
-	
 
       switch ($explodeText[0]) {
 

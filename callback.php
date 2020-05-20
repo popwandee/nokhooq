@@ -66,9 +66,9 @@ use LINE\LINEBot\QuickReplyBuilder\ButtonBuilder\QuickReplyButtonBuilder;
 use LINE\LINEBot\QuickReplyBuilder\QuickReplyMessageBuilder;
 $logger = new Logger('LineBot');
 $logger->pushHandler(new StreamHandler('php://stderr', Logger::DEBUG));
-define("MLAB_API_KEY", '6QxfLc4uRn3vWrlgzsWtzTXBW7CYVsQv');
-define("LINE_MESSAGING_API_CHANNEL_SECRET", 'eb6cf532359c17403e5e20339b389466');
-define("LINE_MESSAGING_API_CHANNEL_TOKEN", 'yf5kpt5rDBiNTVwoI/tkKWlCXvD2fJBq9dDKfqxcuu7qIwf+auxo5hs3wGJsj0Shq5UCfkhGf8gLrcB4PluHJ4ViBppUh5/6PllJ4xi7z+dMUTaNwLa3FXC+FwgVqSvbn7WGnUASUMtkgsh/9dhl9AdB04t89/1O/w1cDnyilFU=');
+define("MLAB_API_KEY", '6QxfLc4uRn3vWrlgzsWtzTXBW7rmvmeCYVsQv');
+define("LINE_MESSAGING_API_CHANNEL_SECRET", 'eb6cf532359c17403e5e20339b389466rmvme');
+define("LINE_MESSAGING_API_CHANNEL_TOKEN", 'yf5kpt5rDBiNTVwoI/tkKWlCXvD2fJBq9dDrmvmeKfqxcuu7qIwf+auxo5hs3wGJsj0Shq5UCfkhGf8gLrcB4PluHJ4ViBppUh5/6PllJ4xi7z+dMUTaNwLa3FXC+FwgVqSvbn7WGnUASUMtkgsh/9dhl9AdB04t89/1O/w1cDnyilFU=');
 $bot = new \LINE\LINEBot(
     new \LINE\LINEBot\HTTPClient\CurlHTTPClient(LINE_MESSAGING_API_CHANNEL_TOKEN),
     ['channelSecret' => LINE_MESSAGING_API_CHANNEL_SECRET]
@@ -129,7 +129,7 @@ foreach ($events as $event) {
 		    $count=1;
                     foreach($data as $rec){
 			   $count++;
-                           $textReplyMessage= "\nหมายเลข ปชช. ".$rec->nationid."\nชื่อ".$rec->name."\nที่อยู่".$rec->address."\nหมายเหตุ".$rec->note;
+                           $textReplyMessage= "\n".$rec->nationid."\nชื่อ".$rec->name."\nที่อยู่".$rec->address."\nหมายเหตุ".$rec->note;
                           /* $textMessage = new TextMessageBuilder($textReplyMessage);
 			   $multiMessage->add($textMessage);
 			   $textReplyMessage= "https://www.hooq.info/img/$rec->nationid.png";
@@ -150,7 +150,7 @@ foreach ($events as $event) {
 			
 			 
 		   }else{ //$isData <0  ไม่พบข้อมูลที่ค้นหา
-		          $textReplyMessage= "ไม่พบ ".$explodeText[1]."  ในฐานข้อมูลของหน่วย";
+		          $textReplyMessage= "ไม่พบ ".$explodeText[1]."  ในฐานข้อมูล";
 			  $textMessage = new TextMessageBuilder($textReplyMessage);
 			  $multiMessage->add($textMessage);
 			 
@@ -158,7 +158,7 @@ foreach ($events as $event) {
 			
 		        } // end $isData>0
 		   }else{ // no $explodeText[1]
-	                $textReplyMessage= "คุณให้ข้อมูลในการสอบถามไม่ครบถ้วนค่ะ,/n กรุณาพิมพ์ #p เว้นวรรค ตามด้วยหมายเลข ปชช. ค่ะ";
+	                $textReplyMessage= "คุณให้ข้อมูลในการสอบถามไม่ครบถ้วนค่ะ,/n กรุณาพิมพ์ #p เว้นวรรค ตามด้วยหมายเลข ค่ะ";
 			$textMessage = new TextMessageBuilder($textReplyMessage);
 			  $multiMessage->add($textMessage);
 			 
